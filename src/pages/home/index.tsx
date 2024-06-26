@@ -1,6 +1,8 @@
 import { ACollapse } from "@/components/collapse";
+import { InputColorPicker } from "@/components/color-picker";
 import { InputDatePicker } from "@/components/date-picker";
 import { LabelIcon } from "@/components/label-icon";
+import Tabs from "@/components/tabs/tab-content";
 import {
   CALENDAR_LAYOUT_OPTIONS,
   LANGUAGE_CODES,
@@ -21,6 +23,7 @@ import {
   useField,
   useForm,
 } from "@shopify/react-form";
+
 export default function HomePage() {
   const { fields, submit, dirty } = useForm({
     fields: {
@@ -37,13 +40,69 @@ export default function HomePage() {
         value: WeekdaysEnum.monday,
         validates: [],
       }),
-      dateFormat: useField<Date | undefined>({
-        validates: [notEmpty("Date Format is Required!")],
-        value: undefined,
+      dateFormat: useField<string>({
+        validates: [notEmpty("Date format is Required!")],
+        value: "",
+      }),
+      titleColor: useField<string>({
+        value: "",
+        validates: [notEmpty("Title color is required!")],
+      }),
+      themeColor: useField<string>({
+        value: "",
+        validates: [notEmpty("Theme color is required!")],
+      }),
+      requiredMessageTextColor: useField<string>({
+        value: "",
+        validates: [notEmpty("Required message text color is required!")],
       }),
       title: useField({
         value: "",
-        validates: [notEmpty("Field is required!")],
+        validates: [notEmpty("Title is required!")],
+      }),
+      deliveryDateLabel: useField({
+        value: "",
+        validates: [notEmpty("Delivery date label is required!")],
+      }),
+      deliveryDateTitle: useField({
+        value: "",
+        validates: [notEmpty("Delivery date title is required!")],
+      }),
+      deliveryTimeTitle: useField({
+        value: "",
+        validates: [notEmpty("Delivery time title is required!")],
+      }),
+      requireMessageText: useField({
+        value: "",
+        validates: [notEmpty("Required message text is required!")],
+      }),
+      customCSS: useField({
+        value: "",
+        validates: [notEmpty("Custom CSS is required!")],
+      }),
+      storePickupLabel: useField({
+        value: "",
+        validates: [notEmpty("Store pickup label is required!")],
+      }),
+      messageToRequireBuyer: useField({
+        value: "",
+        validates: [
+          notEmpty(
+            "Message text to require buyers to choose a pickup location is required!"
+          ),
+        ],
+      }),
+      storePickupDateTitle: useField({
+        value: "",
+        validates: [notEmpty("Store pickup date title is required!")],
+      }),
+      storePickupTimeTitle: useField({
+        value: "",
+        validates: [notEmpty("Store pickup time title is required!")],
+      }),
+      requireMessageTextStorePickup: useField({
+        value: "",
+        validates: [notEmpty("Required message text is required!")],
       }),
     },
     onSubmit: async (props) => {
@@ -53,8 +112,79 @@ export default function HomePage() {
     },
   });
 
+  const tabs = [
+    {
+      key: "1",
+      label: "Delivery Date",
+      content: (
+        <div className="flex-1 flex flex-col gap-3">
+          <TextField label="Title" autoComplete="off" {...fields.title} />
+          <TextField
+            label="Delivery date label"
+            autoComplete="off"
+            {...fields.deliveryDateLabel}
+          />
+          <TextField
+            label="Delivery date title"
+            autoComplete="off"
+            {...fields.deliveryDateTitle}
+          />
+          <TextField
+            label="Delivery time title"
+            autoComplete="off"
+            {...fields.deliveryTimeTitle}
+          />
+          <TextField
+            label="Required message text"
+            autoComplete="off"
+            {...fields.requireMessageText}
+          />
+          <TextField
+            label="Custom CSS"
+            autoComplete="off"
+            multiline={4}
+            {...fields.customCSS}
+          />
+        </div>
+      ),
+    },
+    {
+      key: "2",
+      label: "Store Pickup",
+      content: (
+        <div className="flex-1 flex flex-col gap-3">
+          <TextField
+            label="Store pickup label"
+            autoComplete="off"
+            {...fields.storePickupLabel}
+          />
+          <TextField
+            label="Message text to require buyers to choose a pickup location"
+            autoComplete="off"
+            {...fields.messageToRequireBuyer}
+          />
+          <TextField
+            label="Store pickup date title"
+            autoComplete="off"
+            {...fields.storePickupDateTitle}
+          />
+          <TextField
+            label="Store pickup time title"
+            autoComplete="off"
+            {...fields.storePickupTimeTitle}
+          />
+          <TextField
+            label="Required message text"
+            autoComplete="off"
+            {...fields.requireMessageTextStorePickup}
+          />
+        </div>
+      ),
+    },
+  ];
+
   return (
-    <div>
+    <div className="flex flex-col h-dvh">
       <div className="flex items-center justify-between py-2 px-5 bg-black">
         <div className="text-gray font-bold">Unsaved changes</div>
         <div className="flex items-center gap-1">
@@ -64,7 +194,7 @@ export default function HomePage() {
           </Button>
         </div>
       </div>
-      <div className="container ">
+      <div className="container flex-1 overflow-y-scroll pb-[60px] pt-2.5">
         <div className="font-semibold text-xl">Widget Setting</div>
         <div className="w-full">
           <div className="mt-2.5">
@@ -127,25 +257,35 @@ export default function HomePage() {
               <div className="flex gap-2.5 mt-2">
                 <div className="flex-1 flex flex-col gap-3">
                   <Select
-                    label="Calendar Language"
+                    label="Calendar language"
                     options={LANGUAGE_OPTIONS}
                     value={fields.calendarLang.value}
                     onChange={(value: string) =>
                       fields.calendarLang.onChange(value)
                     }
                   />
-                  {/* <TextField label="Date Format" autoComplete="off" /> */}
                   <InputDatePicker
                     label="Date Format"
                     autoComplete="off"
-                    value={fields.dateFormat.value}
+                    value={
+                      fields.dateFormat.value
+                        ? new Date(fields.dateFormat.value)
+                        : undefined
+                    }
                     onChangeDate={(value?: Date) => {
-                      if (value) {
-                        fields.dateFormat.onChange(value);
-                      }
+                      fields.dateFormat.onChange(value ? value.toString() : "");
                     }}
+                    error={fields.dateFormat.error}
                   />
-                  {/* <TextField label="Title color" autoComplete="off" /> */}
+
+                  <InputColorPicker
+                    label="Title color"
+                    color={fields.titleColor.value}
+                    onChangeColor={(value: string) =>
+                      fields.titleColor.onChange(value)
+                    }
+                    error={fields.titleColor.error}
+                  />
                 </div>
                 <div className="flex-1 flex flex-col gap-3">
                   <Select
@@ -156,15 +296,21 @@ export default function HomePage() {
                       fields.firstDayOfCalendar.onChange(value);
                     }}
                   />
-                  <TextField
+                  <InputColorPicker
                     label="Theme color"
-                    autoComplete="off"
-                    {...fields.title}
+                    color={fields.themeColor.value}
+                    onChangeColor={(value: string) =>
+                      fields.themeColor.onChange(value)
+                    }
+                    error={fields.themeColor.error}
                   />
-                  <TextField
+                  <InputColorPicker
                     label="Require message text color"
-                    autoComplete="off"
-                    {...fields.title}
+                    color={fields.requiredMessageTextColor.value}
+                    onChangeColor={(value: string) =>
+                      fields.requiredMessageTextColor.onChange(value)
+                    }
+                    error={fields.requiredMessageTextColor.error}
                   />
                 </div>
               </div>
@@ -176,7 +322,7 @@ export default function HomePage() {
               open={true}
               toggleTitle={<LabelIcon icon={TextIcon} label="Widget Text" />}
             >
-              <TextField label="Test" autoComplete="off" {...fields.title} />
+              <Tabs tabs={tabs} />
             </ACollapse>
           </div>
         </div>

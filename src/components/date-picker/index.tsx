@@ -1,3 +1,8 @@
+import {
+  formatDateToYYMMDD,
+  getCurrentMonth,
+  getCurrentYear,
+} from "@/helper/date-time";
 import { useDisclosure, useClickOutSide } from "@/hooks";
 import {
   Card,
@@ -6,58 +11,57 @@ import {
   TextField,
   TextFieldProps,
 } from "@shopify/polaris";
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 type Props = Omit<TextFieldProps, "value"> & {
   value?: Date;
-  onChangeDate?: (date: Date) => void;
+  onChangeDate?: (date?: Date) => void;
 };
 
 export function InputDatePicker({ value, onChangeDate, ...rest }: Props) {
   const { isOpen, open, close } = useDisclosure(false);
 
-  const [isFocused, setIsFocused] = useState<boolean>(false);
-  const [selectedDate, setSelectedDate] = useState<Date>(value ?? new Date());
+  const [isFocused, setIsFocused] = useState(false);
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(value);
   const [{ month, year }, setDate] = useState({
-    month: selectedDate.getMonth(),
-    year: selectedDate.getFullYear(),
+    month: value?.getMonth() ?? getCurrentMonth(),
+    year: value?.getFullYear() ?? getCurrentYear(),
   });
 
   const ref = useRef<HTMLDivElement>(null);
 
-  const formattedValue = useMemo(() => {
-    return formatDate(selectedDate);
-  }, [selectedDate]);
+  const formattedValue = useMemo(
+    () => formatDateToYYMMDD(selectedDate),
+    [selectedDate]
+  );
 
-  function handleMonthChange(month: number, year: number) {
+  const handleMonthChange = (month: number, year: number) => {
     setDate({ month, year });
-  }
-  function handleChangeDate(data: { start: Date; end: Date }) {
+  };
+
+  const handleChangeDate = (data: { start: Date; end: Date }) => {
     setSelectedDate(data.end);
     onChangeDate?.(data.end);
     close();
-  }
+  };
 
-  function formatDate(date: Date) {
-    const year = date.getFullYear();
-    const month = (date.getMonth() + 1).toString().padStart(2, "0");
-    const day = date.getDate().toString().padStart(2, "0");
-    return `${year}-${month}-${day}`;
-  }
+  const handleClear = () => {
+    setSelectedDate(undefined);
+    onChangeDate?.(undefined);
+  };
 
   useClickOutSide(ref, () => {
-    if (isFocused) return;
-    close();
+    if (!isFocused) close();
   });
 
-  //   useEffect(() => {
-  //     if (selectedDate) {
-  //       setDate({
-  //         month: selectedDate.getMonth(),
-  //         year: selectedDate.getFullYear(),
-  //       });
-  //     }
-  //   }, [selectedDate]);
+  useEffect(() => {
+    if (selectedDate) {
+      setDate({
+        month: selectedDate.getMonth(),
+        year: selectedDate.getFullYear(),
+      });
+    }
+  }, [selectedDate]);
 
   return (
     <Popover
@@ -72,16 +76,15 @@ export function InputDatePicker({ value, onChangeDate, ...rest }: Props) {
       activator={
         <div ref={ref}>
           <TextField
-            role="combobox"
             value={formattedValue}
             onFocus={() => {
               open();
               setIsFocused(true);
             }}
-            onBlur={() => {
-              setIsFocused(false);
-            }}
+            onBlur={() => setIsFocused(false)}
             {...rest}
+            clearButton
+            onClearButtonClick={handleClear}
           />
         </div>
       }
