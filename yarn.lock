@@ -7,7 +7,7 @@
   resolved "https://registry.yarnpkg.com/@alloc/quick-lru/-/quick-lru-5.2.0.tgz#7bf68b20c0a350f936915fcae06f58e32007ce30"
   integrity sha512-UrcABB+4bUrFABwbluTIBErXwvbsU/V7TZWfmbgJfbkwiBuziS9gxdODUyuiecfdGQ85jglMW6juS3+z5TsKLw==
 
-"@babel/runtime@^7.5.5", "@babel/runtime@^7.8.7":
+"@babel/runtime@^7.24.1", "@babel/runtime@^7.5.5", "@babel/runtime@^7.8.7":
   version "7.24.7"
   resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.24.7.tgz#f4f0d5530e8dbdf59b3451b9b3e594b6ba082e12"
   integrity sha512-UwgBRMjJP+xv857DCngvqXI3Iq6J4v0wXmwc6sapg+zyhbwmQX67LUEFrkK5tbyJ30jGuG3ZvWpBiB9LCy1kWw==
@@ -359,6 +359,26 @@
     "@types/react-transition-group" "^4.4.2"
     react-fast-compare "^3.2.0"
     react-transition-group "^4.4.2"
+
+"@shopify/predicates@^3.1.0":
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/@shopify/predicates/-/predicates-3.1.0.tgz#e347c8072eefdeb4c62b5a50863eb3ab81e67fd1"
+  integrity sha512-0bEEJKLncd0EKs+O39tf6c6m0mN/HXXqtHBBaD7L4gD3nUSeNB8dE0sKjVWhENkwXHNURht6yoFigqKQg0paMA==
+
+"@shopify/react-form@^2.6.0":
+  version "2.6.0"
+  resolved "https://registry.yarnpkg.com/@shopify/react-form/-/react-form-2.6.0.tgz#95a2178d682934d7e3ed8752669c9a17a02b11a9"
+  integrity sha512-fRRGTPQyJCuC8vi5fbSeMj1UztZxxRDi72lHREXxprmQE6BVanIG/+oxbijIkFaR8t1xptJKQZHWvSI2OakXqg==
+  dependencies:
+    "@shopify/predicates" "^3.1.0"
+    "@shopify/react-hooks" "^3.2.0"
+    fast-deep-equal "^3.1.3"
+    get-value "^3.0.1"
+
+"@shopify/react-hooks@^3.2.0":
+  version "3.2.0"
+  resolved "https://registry.yarnpkg.com/@shopify/react-hooks/-/react-hooks-3.2.0.tgz#86308df80ac0e472b812443cff8c7dae9dfa784e"
+  integrity sha512-kBJtZOojsOUEWeIhkZaxVMBaEl5skC5ZxiNO4IbIe51x4zE00RHCMV2ycT5gDOZFm5toh/bYLWunZfa3RvH7tg==
 
 "@swc/core-darwin-arm64@1.6.5":
   version "1.6.5"
@@ -1081,6 +1101,13 @@ function-bind@^1.1.2:
   resolved "https://registry.yarnpkg.com/function-bind/-/function-bind-1.1.2.tgz#2c02d864d97f3ea6c8830c464cbd11ab6eab7a1c"
   integrity sha512-7XHNxH7qX9xG5mIwxkhumTox/MIRNcOgDrxWsMt2pAr23WHp6MrRlN7FBSFpCpr+oVO0F744iUgR82nJMfG2SA==
 
+get-value@^3.0.1:
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/get-value/-/get-value-3.0.1.tgz#5efd2a157f1d6a516d7524e124ac52d0a39ef5a8"
+  integrity sha512-mKZj9JLQrwMBtj5wxi6MH8Z5eSKaERpAwjg43dPtlGI1ZVEgH/qC7T8/6R2OBSUA+zzHBZgICsVJaEIV2tKTDA==
+  dependencies:
+    isobject "^3.0.1"
+
 glob-parent@^5.1.2, glob-parent@~5.1.2:
   version "5.1.2"
   resolved "https://registry.yarnpkg.com/glob-parent/-/glob-parent-5.1.2.tgz#869832c58034fe68a4093c17dc15e8340d8401c4"
@@ -1237,6 +1264,11 @@ isexe@^2.0.0:
   resolved "https://registry.yarnpkg.com/isexe/-/isexe-2.0.0.tgz#e8fbf374dc556ff8947a10dcb0572d633f2cfa10"
   integrity sha512-RHxMLp9lnKHGHRng9QFhRCMbYAcVpn69smSGcq3f36xjgVVWThj4qqLbTLlq7Ssj8B+fIQ1EuCEGI2lKsyQeIw==
 
+isobject@^3.0.1:
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/isobject/-/isobject-3.0.1.tgz#4e431e92b11a9731636aa1f9c8d1ccbcfdab78df"
+  integrity sha512-WhB9zCku7EGTj/HQQRz5aUQEUeoQZH2bWcltRErOpymJ4boYE6wL9Tbr23krRPSZ+C5zqNSrSw+Cc7sZZ4b7vg==
+
 jackspeak@^3.1.2:
   version "3.4.0"
   resolved "https://registry.yarnpkg.com/jackspeak/-/jackspeak-3.4.0.tgz#a75763ff36ad778ede6a156d8ee8b124de445b4a"
@@ -1314,6 +1346,11 @@ locate-path@^6.0.0:
   integrity sha512-iPZK6eYjbxRu3uB4/WZ3EsEIMJFMqAoopl3R+zuq0UjcAm/MO6KCweDgPfP3elTztoKP3KtnVHxTn2NHBSDVUw==
   dependencies:
     p-locate "^5.0.0"
+
+lodash.debounce@^4.0.8:
+  version "4.0.8"
+  resolved "https://registry.yarnpkg.com/lodash.debounce/-/lodash.debounce-4.0.8.tgz#82d79bff30a67c4005ffd5e2515300ad9ca4d7af"
+  integrity sha512-FT1yDzDYEoYWhnSGnpE/4Kj1fLZkDFyqRb7fNt6FdYOSxlUWAtp42Eh6Wb0rGIv/m9Bgo7x4GhQbm5Ys4SG5ow==
 
 lodash.merge@^4.6.2:
   version "4.6.2"
@@ -1601,11 +1638,6 @@ react-fast-compare@^3.2.0:
   resolved "https://registry.yarnpkg.com/react-fast-compare/-/react-fast-compare-3.2.2.tgz#929a97a532304ce9fee4bcae44234f1ce2c21d49"
   integrity sha512-nsO+KSNgo1SbJqJEYRE9ERzo7YtYbou/OqjSQKxV7jcKox7+usiUVZOAC+XnDOABXggQTno0Y1CpVnuWEc1boQ==
 
-react-hook-form@^7.52.0:
-  version "7.52.0"
-  resolved "https://registry.yarnpkg.com/react-hook-form/-/react-hook-form-7.52.0.tgz#e52b33043e283719586b9dd80f6d51b68dd3999c"
-  integrity sha512-mJX506Xc6mirzLsmXUJyqlAI3Kj9Ph2RhplYhUVffeOQSnubK2uVqBFOBJmvKikvbFV91pxVXmDiR+QMF19x6A==
-
 react-is@^16.13.1:
   version "16.13.1"
   resolved "https://registry.yarnpkg.com/react-is/-/react-is-16.13.1.tgz#789729a4dc36de2999dc156dd6c1d9c18cea56a4"
@@ -1846,6 +1878,13 @@ supports-preserve-symlinks-flag@^1.0.0:
   resolved "https://registry.yarnpkg.com/supports-preserve-symlinks-flag/-/supports-preserve-symlinks-flag-1.0.0.tgz#6eda4bd344a3c94aea376d4cc31bc77311039e09"
   integrity sha512-ot0WnXS9fgdkgIcePe6RHNk1WA8+muPa6cSjeR3V8K27q9BB1rTE3R1p7Hv0z1ZyAc8s6Vvv8DIyWf681MAt0w==
 
+tailwind-merge@^2.3.0:
+  version "2.3.0"
+  resolved "https://registry.yarnpkg.com/tailwind-merge/-/tailwind-merge-2.3.0.tgz#27d2134fd00a1f77eca22bcaafdd67055917d286"
+  integrity sha512-vkYrLpIP+lgR0tQCG6AP7zZXCTLc1Lnv/CCRT3BqJ9CZ3ui2++GPaGb1x/ILsINIMSYqqvrpqjUFsMNLlW99EA==
+  dependencies:
+    "@babel/runtime" "^7.24.1"
+
 tailwindcss@^3.4.4:
   version "3.4.4"
   resolved "https://registry.yarnpkg.com/tailwindcss/-/tailwindcss-3.4.4.tgz#351d932273e6abfa75ce7d226b5bf3a6cb257c05"
@@ -1946,6 +1985,13 @@ uri-js@^4.2.2:
   integrity sha512-7rKUyy33Q1yc98pQ1DAmLtwX109F7TIfWlW1Ydo8Wl1ii1SeHieeh0HHfPeL2fMXK6z0s8ecKs9frCuLJvndBg==
   dependencies:
     punycode "^2.1.0"
+
+usehooks-ts@^3.1.0:
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/usehooks-ts/-/usehooks-ts-3.1.0.tgz#156119f36efc85f1b1952616c02580f140950eca"
+  integrity sha512-bBIa7yUyPhE1BCc0GmR96VU/15l/9gP1Ch5mYdLcFBaFGQsdmXkvjV0TtOqW1yUd6VjIwDunm+flSciCQXujiw==
+  dependencies:
+    lodash.debounce "^4.0.8"
 
 util-deprecate@^1.0.2:
   version "1.0.2"
