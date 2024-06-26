@@ -194,7 +194,7 @@ export default function HomePage() {
           </Button>
         </div>
       </div>
-      <div className="container flex-1 overflow-y-scroll pb-[60px] pt-2.5">
+      <div className="px-1 sm:px-4 md:px-8 lg:px-14 xl:px-20 2xl:px-28 3xl:px-32 flex-1 overflow-y-scroll pb-[60px] pt-2.5">
         <div className="font-semibold text-xl">Widget Setting</div>
         <div className="w-full">
           <div className="mt-2.5">
