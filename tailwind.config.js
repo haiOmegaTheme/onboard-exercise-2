@@ -8,6 +8,7 @@ export default {
       pink: "#f62369",
       black: "#202123",
       gray: "#dee0e2",
+      "light-gray": "#e1e3e5",
     },
     extend: {
       transitionTimingFunction: {
