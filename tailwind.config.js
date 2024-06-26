@@ -6,6 +6,8 @@ export default {
       primary: "#303030",
       secondary: "white",
       pink: "#f62369",
+      black: "#202123",
+      gray: "#dee0e2",
     },
     extend: {
       transitionTimingFunction: {
