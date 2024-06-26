@@ -37,9 +37,9 @@ export default function HomePage() {
         value: WeekdaysEnum.monday,
         validates: [],
       }),
-      dateFormat: useField<Date | undefined>({
+      dateFormat: useField<string>({
         validates: [notEmpty("Date Format is Required!")],
-        value: undefined,
+        value: "",
       }),
       title: useField({
         value: "",
@@ -134,18 +134,19 @@ export default function HomePage() {
                       fields.calendarLang.onChange(value)
                     }
                   />
-                  {/* <TextField label="Date Format" autoComplete="off" /> */}
                   <InputDatePicker
                     label="Date Format"
                     autoComplete="off"
-                    value={fields.dateFormat.value}
+                    value={
+                      fields.dateFormat.value
+                        ? new Date(fields.dateFormat.value)
+                        : undefined
+                    }
                     onChangeDate={(value?: Date) => {
-                      if (value) {
-                        fields.dateFormat.onChange(value);
-                      }
+                      fields.dateFormat.onChange(value ? value.toString() : "");
                     }}
+                    error={fields.dateFormat.error}
                   />
-                  {/* <TextField label="Title color" autoComplete="off" /> */}
                 </div>
                 <div className="flex-1 flex flex-col gap-3">
                   <Select
