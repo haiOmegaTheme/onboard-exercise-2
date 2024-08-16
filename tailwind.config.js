@@ -1,16 +1,28 @@
 /** @type {import('tailwindcss').Config} */
 export default {
-  content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
+  content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx,scss}"],
   theme: {
-    colors: {
-      primary: "#303030",
-      secondary: "white",
-      pink: "#f62369",
-      black: "#202123",
-      gray: "#dee0e2",
-      "light-gray": "#e1e3e5",
-    },
     extend: {
+      colors: {
+        primary: "#303030",
+        secondary: "white",
+        pink: "#f62369",
+        black: "#202123",
+        "light-gray": "#e1e3e5",
+        // Bạn có thể mở rộng dải màu gray chuẩn của Tailwind CSS
+        gray: {
+          50: "#F9FAFB",
+          100: "#F3F4F6",
+          200: "#E5E7EB",
+          300: "#D1D5DB",
+          400: "#9CA3AF",
+          500: "#6B7280", // Đây là lớp `text-gray-500` mà bạn đang cần
+          600: "#4B5563",
+          700: "#374151",
+          800: "#1F2937",
+          900: "#111827",
+        },
+      },
       transitionTimingFunction: {
         "ease-in-out-custom": "ease-in-out",
       },
