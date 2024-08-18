@@ -1,5 +1,8 @@
 import { ACard } from "@/components/ACard";
+import { BTabs } from "@/components/BTabs";
 import { DemoTabs } from "@/components/dem-tabs";
+import WorkspaceToggle from "@/components/DemoToggle";
+import DTabs from "@/components/DTabs";
 import { useState } from "react";
 
 type Tabs = {
@@ -23,8 +26,10 @@ export type Plan = {
 export default function DemoPage() {
   const tabsItem = [
     { id: 1, label: "Monthly" },
-    { id: 2, label: "Annual" },
+    { id: 2, label: "Annual larger than other" },
   ];
+
+  const demo = ["Monthly", "Annual larger than other"];
   const [selectedTab, setSelectedTab] = useState(1);
   const handleSelectTab = (tab: Tabs) => {
     setSelectedTab(tab.id);
@@ -119,6 +124,19 @@ export default function DemoPage() {
           <div className="mt-2.5">
             Only pay for Visor users that need to edit.
           </div>
+        </div>
+        <div className="flex justify-center">
+          <div className="w-[412px]">
+            <BTabs />
+          </div>
+        </div>
+        <div className="flex justify-center">
+          <div className="w-[412px]">
+            <WorkspaceToggle tabs={demo} />
+          </div>
+        </div>
+        <div className="flex justify-center">
+          <DTabs />
         </div>
         <div className=" max-w-full mx-auto mt-5">
           <DemoTabs
