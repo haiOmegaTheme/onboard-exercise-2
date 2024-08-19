@@ -5,7 +5,7 @@
   .tabs__item {
     @apply flex justify-center py-2;
     &--active {
-      @apply flex justify-center bg-white rounded-full shadow text-indigo-900 py-2;
+      // @apply flex justify-center bg-white rounded-full shadow text-indigo-900 py-2;
     }
   }
 }

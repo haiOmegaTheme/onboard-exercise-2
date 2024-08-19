@@ -3,7 +3,7 @@ import { BTabs } from "@/components/BTabs";
 import { DemoTabs } from "@/components/dem-tabs";
 import WorkspaceToggle from "@/components/DemoToggle";
 import DTabs from "@/components/DTabs";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 type Tabs = {
   id: number;
@@ -142,7 +142,9 @@ export default function DemoPage() {
           <DemoTabs
             tabs={tabsItem}
             selectedTab={selectedTab}
-            onTabSelected={handleSelectTab}
+            onTabSelected={(tabs: any) => {
+              handleSelectTab(tabs);
+            }}
           />
           <div
             className="flex gap-5 justify-center mt-7
