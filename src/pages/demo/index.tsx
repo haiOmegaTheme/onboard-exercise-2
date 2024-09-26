@@ -3,7 +3,8 @@ import { BTabs } from "@/components/BTabs";
 import { DemoTabs } from "@/components/dem-tabs";
 import WorkspaceToggle from "@/components/DemoToggle";
 import DTabs from "@/components/DTabs";
-import { useEffect, useState } from "react";
+import { Box, Text } from "@shopify/polaris";
+import { useState } from "react";
 
 type Tabs = {
   id: number;
@@ -82,7 +83,7 @@ export default function DemoPage() {
       features: [
         { id: 1, label: "2 team members", active: true },
         { id: 2, label: "20GB Cloud storage", active: true },
-        { id: 3, label: "Basic support", active: true },
+        { id: 3, label: "Basic support", active: false },
         { id: 4, label: "Weekly backups", active: false },
         { id: 5, label: "Limited analytics", active: false },
       ],
@@ -93,7 +94,7 @@ export default function DemoPage() {
       price: 100,
       features: [
         { id: 1, label: "10 team members", active: true },
-        { id: 2, label: "100GB Cloud storage", active: true },
+        { id: 2, label: "100GB Cloud storage", active: false },
         { id: 3, label: "Priority email support", active: true },
         { id: 4, label: "Custom domain support", active: true },
         { id: 5, label: "Daily backups", active: true },
@@ -125,6 +126,7 @@ export default function DemoPage() {
             Only pay for Visor users that need to edit.
           </div>
         </div>
+        <div></div>
         <div className="flex justify-center">
           <div className="w-[412px]">
             <BTabs />
@@ -134,6 +136,15 @@ export default function DemoPage() {
           <div className="w-[412px]">
             <WorkspaceToggle tabs={demo} />
           </div>
+        </div>
+        <div>
+          <Box background="bg-fill-info-secondary">
+            <div>demo</div>
+            <div>demo</div>
+            <Text as="p" fontWeight="semibold" variant="bodySm">
+              Recommended
+            </Text>
+          </Box>
         </div>
         <div className="flex justify-center">
           <DTabs />
