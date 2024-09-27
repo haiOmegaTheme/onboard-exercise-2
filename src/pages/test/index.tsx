@@ -8,13 +8,18 @@ import {
   useIndexResourceState,
 } from "@shopify/polaris";
 import { DeleteIcon } from "@shopify/polaris-icons";
-import { useState } from "react";
+import { useEffect, useState, memo } from "react";
+import { MOCK_ORDERS } from "./helper";
+import { DataItem } from "@/types";
+import { paginate } from "./demo";
 
 type PaginationState = {
   page: number;
   limit: number;
   total: number;
 };
+
+const Demo = memo(AppPagination);
 
 function TestPage() {
   const orders = [
@@ -53,13 +58,26 @@ function TestPage() {
 
   const [pagination, setPagination] = useState<PaginationState>({
     page: 1,
-    limit: 10,
-    total: 0,
+    limit: 5,
+    total: MOCK_ORDERS?.length ?? 0,
   });
-  const { selectedResources, allResourcesSelected, handleSelectionChange } =
-    useIndexResourceState(orders);
 
-  const rowMarkup = orders.map(
+  const [data, setData] = useState<DataItem[]>([]);
+
+  useEffect(() => {
+    const demo = paginate(MOCK_ORDERS, pagination);
+
+    setData(demo.data);
+  }, [pagination]);
+
+  const { selectedResources, allResourcesSelected, handleSelectionChange } =
+    useIndexResourceState(MOCK_ORDERS);
+
+  useEffect(() => {
+    console.log("demo>>>", selectedResources);
+  }, [selectedResources]);
+
+  const rowMarkup = data.map(
     (
       { id, order, date, customer, total, paymentStatus, fulfillmentStatus },
       index
@@ -126,10 +144,11 @@ function TestPage() {
           <IndexTable
             condensed={useBreakpoints().smDown}
             resourceName={resourceName}
-            itemCount={orders.length}
+            itemCount={MOCK_ORDERS.length}
             selectedItemsCount={
               allResourcesSelected ? "All" : selectedResources.length
             }
+            paginatedSelectAllText="asdasdflaskdjflaksdjflasjdlfjalsd"
             onSelectionChange={handleSelectionChange}
             hasMoreItems
             bulkActions={bulkActions}
@@ -146,7 +165,7 @@ function TestPage() {
             {rowMarkup}
           </IndexTable>
 
-          <AppPagination pagination={pagination} onChangePage={setPagination} />
+          <Demo pagination={pagination} onChangePage={setPagination} />
         </Card>
       </div>
     </div>

@@ -15,3 +15,13 @@ export type PaginationType = {
   total: number;
   limit: number;
 };
+
+export type DataItem = {
+  id: string;
+  order: string;
+  date: string;
+  customer: string;
+  total: string;
+  paymentStatus: JSX.Element;
+  fulfillmentStatus: JSX.Element;
+};

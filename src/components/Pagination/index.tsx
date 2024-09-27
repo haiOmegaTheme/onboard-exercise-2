@@ -9,7 +9,7 @@ import {
   Popover,
 } from "@shopify/polaris";
 import { OptionDescriptor } from "@shopify/polaris/build/ts/src/types";
-import { useCallback } from "react";
+import { useCallback, memo } from "react";
 
 type Props = {
   align?: "center" | "end" | "start";
@@ -18,7 +18,7 @@ type Props = {
   itemsPerPageOptions?: OptionDescriptor[];
 };
 
-export const AppPagination = ({
+export const AppPagination = memo(function AppPagination({
   align = "end",
   pagination = {
     page: 1,
@@ -44,8 +44,9 @@ export const AppPagination = ({
     },
   ],
   onChangePage,
-}: Props) => {
+}: Props) {
   const { isOpen, close, open } = useDisclosure(false);
+
   const handleChangePagination = useCallback(
     (fields: Partial<PaginationType>) => {
       const data = {
@@ -61,10 +62,14 @@ export const AppPagination = ({
 
   const handleChangeLimit = useCallback(
     (selected: string[]) => {
-      handleChangePagination({ limit: parseInt(selected?.[0] ?? 5) });
+      handleChangePagination({
+        limit: parseInt(selected?.[0] ?? "5"),
+        page: 1,
+      });
     },
     [handleChangePagination]
   );
+
   return (
     <InlineStack blockAlign="center" align={align} gap="200">
       <Popover
@@ -72,7 +77,15 @@ export const AppPagination = ({
         onClose={close}
         activator={
           <Box width="50px">
-            <Button fullWidth variant="secondary" onClick={open}>
+            <Button
+              fullWidth
+              variant="secondary"
+              onClick={open}
+              disabled={
+                pagination.total <
+                parseInt(itemsPerPageOptions?.[0].value ?? "0")
+              }
+            >
               {pagination.limit.toString()}
             </Button>
           </Box>
@@ -91,10 +104,10 @@ export const AppPagination = ({
       </Popover>
       <Pagination
         hasPrevious={pagination.page > 1}
-        hasNext={pagination.page < pagination.total}
-        onNext={() => handleChangePagination({ page: pagination.page - 1 })}
-        onPrevious={() => handleChangePagination({ page: pagination.page + 1 })}
+        hasNext={pagination.page * pagination.limit < pagination.total}
+        onNext={() => handleChangePagination({ page: pagination.page + 1 })}
+        onPrevious={() => handleChangePagination({ page: pagination.page - 1 })}
       />
     </InlineStack>
   );
-};
+});

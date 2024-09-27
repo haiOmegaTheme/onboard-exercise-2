@@ -1,172 +1,218 @@
-import { ACard } from "@/components/ACard";
-import { BTabs } from "@/components/BTabs";
-import { DemoTabs } from "@/components/dem-tabs";
-import WorkspaceToggle from "@/components/DemoToggle";
-import DTabs from "@/components/DTabs";
-import { Box, Text } from "@shopify/polaris";
-import { useState } from "react";
+import {
+  Badge,
+  IndexTable,
+  LegacyCard,
+  Text,
+  useBreakpoints,
+  useIndexResourceState,
+} from "@shopify/polaris";
+import { DeleteIcon } from "@shopify/polaris-icons";
 
-type Tabs = {
-  id: number;
-  label: string;
-};
-
-type Feature = {
-  id: number;
-  label: string;
-  active: boolean;
-};
-
-export type Plan = {
-  id: number;
-  title: string;
-  price: number;
-  features: Feature[];
-};
-
-export default function DemoPage() {
-  const tabsItem = [
-    { id: 1, label: "Monthly" },
-    { id: 2, label: "Annual larger than other" },
+function IndexTableWithBulkActionsAndSelectionAcrossPagesExample() {
+  const orders = [
+    {
+      id: "1020",
+      order: "#1020",
+      date: "Jul 20 at 4:34pm",
+      customer: "Jaydon Stanton",
+      total: "$969.44",
+      paymentStatus: <Badge progress="complete">Paid</Badge>,
+      fulfillmentStatus: <Badge progress="incomplete">Unfulfilled</Badge>,
+    },
+    {
+      id: "1019",
+      order: "#1019",
+      date: "Jul 20 at 3:46pm",
+      customer: "Ruben Westerfelt",
+      total: "$701.19",
+      paymentStatus: <Badge progress="partiallyComplete">Partially paid</Badge>,
+      fulfillmentStatus: <Badge progress="incomplete">Unfulfilled</Badge>,
+    },
+    {
+      id: "1018",
+      order: "#1018",
+      date: "Jul 20 at 3.44pm",
+      customer: "Leo Carder",
+      total: "$798.24",
+      paymentStatus: <Badge progress="complete">Paid</Badge>,
+      fulfillmentStatus: <Badge progress="incomplete">Unfulfilled</Badge>,
+    },
+    {
+      id: "11020",
+      order: "#1020",
+      date: "Jul 20 at 4:34pm",
+      customer: "Jaydon Stanton",
+      total: "$969.44",
+      paymentStatus: <Badge progress="complete">Paid</Badge>,
+      fulfillmentStatus: <Badge progress="incomplete">Unfulfilled</Badge>,
+    },
+    {
+      id: "11019",
+      order: "#1019",
+      date: "Jul 20 at 3:46pm",
+      customer: "Ruben Westerfelt",
+      total: "$701.19",
+      paymentStatus: <Badge progress="partiallyComplete">Partially paid</Badge>,
+      fulfillmentStatus: <Badge progress="incomplete">Unfulfilled</Badge>,
+    },
+    {
+      id: "11018",
+      order: "#1018",
+      date: "Jul 20 at 3.44pm",
+      customer: "Leo Carder",
+      total: "$798.24",
+      paymentStatus: <Badge progress="complete">Paid</Badge>,
+      fulfillmentStatus: <Badge progress="incomplete">Unfulfilled</Badge>,
+    },
+    {
+      id: "21020",
+      order: "#1020",
+      date: "Jul 20 at 4:34pm",
+      customer: "Jaydon Stanton",
+      total: "$969.44",
+      paymentStatus: <Badge progress="complete">Paid</Badge>,
+      fulfillmentStatus: <Badge progress="incomplete">Unfulfilled</Badge>,
+    },
+    {
+      id: "21019",
+      order: "#1019",
+      date: "Jul 20 at 3:46pm",
+      customer: "Ruben Westerfelt",
+      total: "$701.19",
+      paymentStatus: <Badge progress="partiallyComplete">Partially paid</Badge>,
+      fulfillmentStatus: <Badge progress="incomplete">Unfulfilled</Badge>,
+    },
+    {
+      id: "21018",
+      order: "#1018",
+      date: "Jul 20 at 3.44pm",
+      customer: "Leo Carder",
+      total: "$798.24",
+      paymentStatus: <Badge progress="complete">Paid</Badge>,
+      fulfillmentStatus: <Badge progress="incomplete">Unfulfilled</Badge>,
+    },
+    {
+      id: "211020",
+      order: "#1020",
+      date: "Jul 20 at 4:34pm",
+      customer: "Jaydon Stanton",
+      total: "$969.44",
+      paymentStatus: <Badge progress="complete">Paid</Badge>,
+      fulfillmentStatus: <Badge progress="incomplete">Unfulfilled</Badge>,
+    },
+    {
+      id: "211019",
+      order: "#1019",
+      date: "Jul 20 at 3:46pm",
+      customer: "Ruben Westerfelt",
+      total: "$701.19",
+      paymentStatus: <Badge progress="partiallyComplete">Partially paid</Badge>,
+      fulfillmentStatus: <Badge progress="incomplete">Unfulfilled</Badge>,
+    },
+    {
+      id: "211018",
+      order: "#1018",
+      date: "Jul 20 at 3.44pm",
+      customer: "Leo Carder",
+      total: "$798.24",
+      paymentStatus: <Badge progress="complete">Paid</Badge>,
+      fulfillmentStatus: <Badge progress="incomplete">Unfulfilled</Badge>,
+    },
   ];
-
-  const demo = ["Monthly", "Annual larger than other"];
-  const [selectedTab, setSelectedTab] = useState(1);
-  const handleSelectTab = (tab: Tabs) => {
-    setSelectedTab(tab.id);
+  const resourceName = {
+    singular: "order",
+    plural: "orders",
   };
 
-  const monthlyPlans: Plan[] = [
+  const { selectedResources, allResourcesSelected, handleSelectionChange } =
+    useIndexResourceState(orders);
+
+  const rowMarkup = orders.map(
+    (
+      { id, order, date, customer, total, paymentStatus, fulfillmentStatus },
+      index
+    ) => (
+      <IndexTable.Row
+        id={id}
+        key={id}
+        selected={selectedResources.includes(id)}
+        position={index}
+      >
+        <IndexTable.Cell>
+          <Text variant="bodyMd" fontWeight="bold" as="span">
+            {order}
+          </Text>
+        </IndexTable.Cell>
+        <IndexTable.Cell>{date}</IndexTable.Cell>
+        <IndexTable.Cell>{customer}</IndexTable.Cell>
+        <IndexTable.Cell>
+          <Text as="span" alignment="end" numeric>
+            {total}
+          </Text>
+        </IndexTable.Cell>
+        <IndexTable.Cell>{paymentStatus}</IndexTable.Cell>
+        <IndexTable.Cell>{fulfillmentStatus}</IndexTable.Cell>
+      </IndexTable.Row>
+    )
+  );
+
+  const promotedBulkActions = [
     {
-      id: 1,
-      title: "Free",
-      price: 0,
-      features: [
-        { id: 1, label: "2 team members", active: true },
-        { id: 2, label: "20GB Cloud storage", active: true },
-        { id: 3, label: "Basic support", active: true },
-        { id: 4, label: "Weekly backups", active: false },
-        { id: 5, label: "Limited analytics", active: false },
-      ],
+      content: "Create shipping labels",
+      onAction: () => console.log("Todo: implement create shipping labels"),
     },
     {
-      id: 2,
-      title: "Pro",
-      price: 10,
-      features: [
-        { id: 1, label: "10 team members", active: true },
-        { id: 2, label: "100GB Cloud storage", active: true },
-        { id: 3, label: "Priority email support", active: true },
-        { id: 4, label: "Custom domain support", active: true },
-        { id: 5, label: "Daily backups", active: true },
-      ],
+      content: "Mark as fulfilled",
+      onAction: () => console.log("Todo: implement mark as fulfilled"),
     },
     {
-      id: 3,
-      title: "Enterprise",
-      price: 30,
-      features: [
-        { id: 1, label: "Unlimited team members", active: true },
-        { id: 2, label: "1TB Cloud storage", active: true },
-        { id: 3, label: "Dedicated account manager", active: true },
-        { id: 4, label: "Hourly backups", active: true },
-        { id: 5, label: "Full analytics and reporting", active: true },
-      ],
+      content: "Capture payment",
+      onAction: () => console.log("Todo: implement capture payment"),
     },
   ];
-
-  const annualPlans: Plan[] = [
+  const bulkActions = [
     {
-      id: 1,
-      title: "Free",
-      price: 0,
-      features: [
-        { id: 1, label: "2 team members", active: true },
-        { id: 2, label: "20GB Cloud storage", active: true },
-        { id: 3, label: "Basic support", active: false },
-        { id: 4, label: "Weekly backups", active: false },
-        { id: 5, label: "Limited analytics", active: false },
-      ],
+      content: "Add tags",
+      onAction: () => console.log("Todo: implement bulk add tags"),
     },
     {
-      id: 2,
-      title: "Pro",
-      price: 100,
-      features: [
-        { id: 1, label: "10 team members", active: true },
-        { id: 2, label: "100GB Cloud storage", active: false },
-        { id: 3, label: "Priority email support", active: true },
-        { id: 4, label: "Custom domain support", active: true },
-        { id: 5, label: "Daily backups", active: true },
-      ],
+      content: "Remove tags",
+      onAction: () => console.log("Todo: implement bulk remove tags"),
     },
     {
-      id: 3,
-      title: "Enterprise",
-      price: 300,
-      features: [
-        { id: 1, label: "Unlimited team members", active: true },
-        { id: 2, label: "1TB Cloud storage", active: true },
-        { id: 3, label: "Dedicated account manager", active: true },
-        { id: 4, label: "Hourly backups", active: true },
-        { id: 5, label: "Full analytics and reporting", active: true },
-      ],
+      icon: DeleteIcon,
+      destructive: true,
+      content: "Delete customers",
+      onAction: () => console.log("Todo: implement bulk delete"),
     },
   ];
-
-  const currentPlans = selectedTab === 1 ? monthlyPlans : annualPlans;
 
   return (
-    <div className="flex flex-col h-dvh bg-secondary">
-      <div className="flex items-center justify-between py-2 px-5 bg-black h-[40px]"></div>
-      <div className="overflow-y-scroll flex-1 mt-7">
-        <div className="flex flex-col items-center">
-          <div className="font-bold text-xl">Choose your plan</div>
-          <div className="mt-2.5">
-            Only pay for Visor users that need to edit.
-          </div>
-        </div>
-        <div></div>
-        <div className="flex justify-center">
-          <div className="w-[412px]">
-            <BTabs />
-          </div>
-        </div>
-        <div className="flex justify-center">
-          <div className="w-[412px]">
-            <WorkspaceToggle tabs={demo} />
-          </div>
-        </div>
-        <div>
-          <Box background="bg-fill-info-secondary">
-            <div>demo</div>
-            <div>demo</div>
-            <Text as="p" fontWeight="semibold" variant="bodySm">
-              Recommended
-            </Text>
-          </Box>
-        </div>
-        <div className="flex justify-center">
-          <DTabs />
-        </div>
-        <div className=" max-w-full mx-auto mt-5">
-          <DemoTabs
-            tabs={tabsItem}
-            selectedTab={selectedTab}
-            onTabSelected={(tabs: any) => {
-              handleSelectTab(tabs);
-            }}
-          />
-          <div
-            className="flex gap-5 justify-center mt-7
-          "
-          >
-            {currentPlans.map((plan) => (
-              <ACard plan={plan} key={plan.id} />
-            ))}
-          </div>
-        </div>
-      </div>
-    </div>
+    <LegacyCard>
+      <IndexTable
+        condensed={useBreakpoints().smDown}
+        resourceName={resourceName}
+        itemCount={orders.length}
+        selectedItemsCount={
+          allResourcesSelected ? "All" : selectedResources.length
+        }
+        onSelectionChange={handleSelectionChange}
+        hasMoreItems
+        bulkActions={bulkActions}
+        promotedBulkActions={promotedBulkActions}
+        headings={[
+          { title: "Order" },
+          { title: "Date" },
+          { title: "Customer" },
+          { title: "Total", alignment: "end" },
+          { title: "Payment status" },
+          { title: "Fulfillment status" },
+        ]}
+      >
+        {rowMarkup}
+      </IndexTable>
+    </LegacyCard>
   );
 }
+
+export default IndexTableWithBulkActionsAndSelectionAcrossPagesExample;
