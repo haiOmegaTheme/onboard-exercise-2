@@ -7,6 +7,7 @@ const MainLayout = lazy(() => import("@/layout/main-layout"));
 const HomePage = lazy(() => import("@/pages/home"));
 const DemoPage = lazy(() => import("@/pages/demo"));
 const TestPage = lazy(() => import("@/pages/test"));
+const ContactPage = lazy(() => import("@/pages/contact"));
 
 const routeList: IRoute[] = [
   {
@@ -22,6 +23,11 @@ const routeList: IRoute[] = [
   {
     path: "/test",
     component: TestPage,
+  },
+  {
+    path: "/contact",
+    component: ContactPage,
+    layout: MainLayout,
   },
 ];
 

@@ -2,16 +2,24 @@ import { AppPagination } from "@/components/Pagination";
 import {
   Badge,
   Card,
+  Icon,
   IndexTable,
   Text,
   useBreakpoints,
   useIndexResourceState,
+  useMediaQuery,
 } from "@shopify/polaris";
 import { DeleteIcon } from "@shopify/polaris-icons";
-import { useEffect, useState, memo } from "react";
+import { useEffect, useState, memo, useMemo } from "react";
 import { MOCK_ORDERS } from "./helper";
 import { DataItem } from "@/types";
 import { paginate } from "./demo";
+import { EmojiRating } from "@/components/EmojiRating";
+import { EMOJI_RATING_ARRAY } from "@/helper/constant";
+import { StarIcon } from "@shopify/polaris-icons";
+import moment from "moment-timezone";
+import TabToggle from "@/components/DemoToggle";
+import { AdReportTable } from "./components/AdReportTable";
 
 type PaginationState = {
   page: number;
@@ -63,6 +71,8 @@ function TestPage() {
   });
 
   const [data, setData] = useState<DataItem[]>([]);
+
+  const demo = [];
 
   useEffect(() => {
     const demo = paginate(MOCK_ORDERS, pagination);
@@ -137,8 +147,39 @@ function TestPage() {
     },
   ];
 
+  const [voted, setVoted] = useState<number | undefined>(undefined);
+
+  const a = useMediaQuery("mouse", { initializeWithValue: true });
+
+  console.log(a);
   return (
-    <div className="flex justify-center items-center h-dvh">
+    <div className="flex flex-col justify-center items-center h-dvh">
+      <div className="w-[400px]">
+        <TabToggle tabs={["Monthly", "Annually Save up to 30%"]} />
+      </div>
+      <AdReportTable />
+      <div className="flex gap-4">
+        {EMOJI_RATING_ARRAY.map((item, index) => (
+          <EmojiRating
+            key={index}
+            onVote={() => setVoted(index)}
+            emojiSources={item}
+            hasVoted={index === voted}
+          />
+        ))}
+      </div>
+
+      <div>
+        <img
+          src="https://cdn.shopify.com/s/files/1/0790/2373/4977/files/b1.png?v=1728378670"
+          alt=""
+        />
+        <img
+          src="https://cdn.shopify.com/s/files/1/0790/2373/4977/files/b.png?v=1728378670"
+          alt=""
+        />
+      </div>
+
       <div className="w-4/5">
         <Card>
           <IndexTable

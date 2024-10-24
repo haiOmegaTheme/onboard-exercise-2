@@ -11,7 +11,6 @@ import {
   WEEKDAYS_OPTIONS,
 } from "@/helper/constant";
 import { CalendarLayoutEnum, LayoutEnum, WeekdaysEnum } from "@/helper/enum";
-import * as Switch from "@radix-ui/react-switch";
 import { Checkbox, Select, TextField } from "@shopify/polaris";
 import {
   PaintBrushFlatIcon,
@@ -217,11 +216,7 @@ export default function HomePage() {
             }
           >
             <div className="flex gap-2.5">
-              {" "}
               aa
-              <Switch.Root className="SwitchRoot" id="airplane-mode">
-                <Switch.Thumb className="SwitchThumb" />
-              </Switch.Root>
               <div className="flex-1">
                 <Select
                   label="Layout"
