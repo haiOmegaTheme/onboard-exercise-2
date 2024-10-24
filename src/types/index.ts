@@ -61,14 +61,13 @@ export type OrderItem = {
 // =============================================
 
 export enum SortDirectionEnum {
-  ascending = "ASC",
-  descending = "DESC",
+  ascending = "asc",
+  descending = "desc",
 }
 
 type SortBy = {
   item?: string;
-  type?: SortDirectionEnum;
-  direction?: SortDirectionEnum;
+  direction?: string;
 };
 
 // =============================================
@@ -78,8 +77,9 @@ export type Filters = {
     min?: string;
     max?: string;
   };
-  source?: string;
+  source?: SourceTypeEnum;
   sortBy?: SortBy;
+  tabType: TapTypeEnum;
 };
 
 export enum ColumnTypeEnum {
@@ -90,3 +90,30 @@ export enum ColumnTypeEnum {
   purchases = "PURCHASES",
   totalSales = "TOTAL_SALES",
 }
+
+export enum SourceTypeEnum {
+  tikTok = "TIK_TOK",
+}
+
+export enum TapTypeEnum {
+  campaign = "CAMPAIGN",
+  adGroup = "AD_GROUP",
+  ad = "AD",
+}
+
+export enum AdReportTableTabEnum {
+  first = 0,
+  second = 1,
+  third = 2,
+}
+
+export type TableItem = {
+  id: string;
+  name: string;
+  source: string | null; // source could be null for undetected campaigns
+  viewContent: number | null; // could be null or a number
+  addToCart: number | null; // could be null or a number
+  initiateCheckout: number | null; // could be null or a number
+  purchases: number | null; // could be null or a number
+  totalSales: number;
+};

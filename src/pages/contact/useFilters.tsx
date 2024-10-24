@@ -1,4 +1,11 @@
-import { ColumnTypeEnum, Filters, SortDirectionEnum } from "@/types";
+import { isValidArray } from "@/helper/validator";
+import {
+  ColumnTypeEnum,
+  Filters,
+  SortDirectionEnum,
+  SourceTypeEnum,
+  TapTypeEnum,
+} from "@/types";
 import {
   Box,
   ChoiceList,
@@ -8,27 +15,16 @@ import {
 } from "@shopify/polaris";
 import {
   COLUMNS_TYPE_OPTIONS,
+  FILTER_LABELS,
   FILTER_SOURCE_OPTIONS,
+  FilterKeyEnum,
   SORT_BY_NAME_OPTIONS,
   SORT_BY_NUMBER_OPTIONS,
 } from "./helper";
-import { isValidArray } from "@/helper/validator";
-
-enum FilterKeyEnum {
-  totalSales = "TOTAL_SALES",
-  source = "SOURCE",
-  sortBy = "SORT_BY",
-}
-
-const FILTER_LABELS = {
-  totalSales: "Total sales",
-  sortBy: "Sort by",
-  source: "Source",
-};
 
 export const useFilters = (
   filters: Filters,
-  handleChangeFilter: (data: Filters) => void
+  handleChangeFilter: (data: Partial<Filters>) => void
 ) => {
   const demoFilters = [
     {
@@ -76,7 +72,7 @@ export const useFilters = (
       filter: (
         <Box>
           <OptionList
-            onChange={(value) => {
+            onChange={(value: SourceTypeEnum[]) => {
               if (!isValidArray(value)) return;
               handleChangeFilter({
                 source: value?.[0],
@@ -98,18 +94,17 @@ export const useFilters = (
             title=""
             choices={COLUMNS_TYPE_OPTIONS}
             selected={filters?.sortBy?.item ? [filters?.sortBy?.item] : []}
-            onChange={(value) => {
+            onChange={(value: ColumnTypeEnum[]) => {
               if (!isValidArray(value)) return;
               handleChangeFilter({
                 sortBy: {
                   ...(filters?.sortBy ?? {}),
                   item: value?.[0],
-                  direction: undefined,
+                  // direction: undefined,
                 },
               });
             }}
           />
-          {filters?.sortBy?.item === ColumnTypeEnum.name ? "" : ""}
           <OptionList
             options={
               filters?.sortBy?.item === ColumnTypeEnum.name
@@ -134,4 +129,14 @@ export const useFilters = (
     },
   ];
   return { demoFilters };
+};
+
+export const INITIAL_AD_REPORT_FILTERS = {
+  search: "",
+  totalSales: {},
+  sortBy: {
+    item: ColumnTypeEnum.name,
+    direction: SortDirectionEnum.descending,
+  },
+  tabType: TapTypeEnum.campaign,
 };

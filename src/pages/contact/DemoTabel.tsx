@@ -1,53 +1,56 @@
-import { Filters } from "@/types";
-import type { IndexFiltersProps, TabProps } from "@shopify/polaris";
+import { AppPagination } from "@/components/Pagination";
+import { isValidArray } from "@/helper/validator";
 import {
+  ColumnTypeEnum,
+  Filters,
+  SortDirectionEnum,
+  TapTypeEnum,
+} from "@/types";
+import {
+  Box,
   Card,
   IndexFilters,
   IndexFiltersMode,
   IndexTable,
+  Page,
   useBreakpoints,
   useIndexResourceState,
   useSetIndexFiltersMode,
 } from "@shopify/polaris";
-import { useCallback, useState } from "react";
-import { disambiguateLabel, HEADER, isEmpty, orders, sleep } from "./helper";
-import { TableRows } from "./TableRows";
-import { useFilters } from "./useFilters";
+import React, {
+  lazy,
+  Suspense,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
+import {
+  AD_REPORT_SORT_OPTIONS,
+  HEADER,
+  INITIAL_TABS_OPTIONS,
+  MAPPING_SELECTED_TAB_TO_TAB_TYPE,
+  MAPPING_TAB_TYPE_TO_SELECTED_TAB,
+  orders,
+} from "./helper";
+// import { TableRows } from "./TableRows";
+import { TableRowSkeleton } from "./TableRowSkeleton";
+import { useAppliedFilters } from "./useAppliedFilters";
+import { INITIAL_AD_REPORT_FILTERS, useFilters } from "./useFilters";
+
+const LazyTableRows = lazy(() => import("./TableRows"));
 
 const resourceName = {
-  singular: "order",
-  plural: "orders",
+  singular: "Ad report",
+  plural: "Ad reports",
 };
 
 export function DemoTable() {
-  const [itemStrings, setItemStrings] = useState([
-    "All",
-    "Unpaid",
-    "Open",
-    "Closed",
-    "Local delivery",
-    "Local pickup",
-  ]);
-  const deleteView = (index: number) => {
-    const newItemStrings = [...itemStrings];
-    newItemStrings.splice(index, 1);
-    setItemStrings(newItemStrings);
-    setSelected(0);
-  };
+  const [demoFilters, setDemoFilters] = useState<Filters>(
+    structuredClone(INITIAL_AD_REPORT_FILTERS)
+  );
 
-  const duplicateView = async (name: string) => {
-    setItemStrings([...itemStrings, name]);
-    setSelected(itemStrings.length);
-    await sleep(1);
-    return true;
-  };
-
-  const [demoFilters, setDemoFilters] = useState<Filters>({
-    search: "",
-    totalSales: {},
-    source: "",
-    sortBy: {},
-  });
+  const [isLoading, setIsLoading] = useState(true);
 
   const handleChangeFilter = useCallback((data: Partial<Filters>) => {
     setDemoFilters((prev) => ({
@@ -56,163 +59,132 @@ export function DemoTable() {
     }));
   }, []);
 
+  const handleFiltersClearAll = useCallback(() => {
+    handleChangeFilter(structuredClone(INITIAL_AD_REPORT_FILTERS));
+  }, [handleChangeFilter]);
+
   const { demoFilters: filters } = useFilters(demoFilters, handleChangeFilter);
+  const appliedFilters = useAppliedFilters(demoFilters, handleChangeFilter);
 
-  const tabs: TabProps[] = itemStrings.map((item, index) => ({
-    content: item,
-    index,
-    onAction: () => {},
-    id: `${item}-${index}`,
-    isLocked: index === 0,
-    actions:
-      index === 0
-        ? []
-        : [
-            {
-              type: "rename",
-              onAction: () => {},
-              onPrimaryAction: async (value: string): Promise<boolean> => {
-                const newItemsStrings = tabs.map((item, idx) => {
-                  if (idx === index) {
-                    return value;
-                  }
-                  return item.content;
-                });
-                await sleep(1);
-                setItemStrings(newItemsStrings);
-                return true;
-              },
-            },
-            {
-              type: "duplicate",
-              onPrimaryAction: async (value: string): Promise<boolean> => {
-                await sleep(1);
-                duplicateView(value);
-                return true;
-              },
-            },
-            {
-              type: "edit",
-            },
-            {
-              type: "delete",
-              onPrimaryAction: async () => {
-                await sleep(1);
-                deleteView(index);
-                return true;
-              },
-            },
-          ],
-  }));
-  const [selected, setSelected] = useState(0);
-  const onCreateNewView = async (value: string) => {
-    await sleep(500);
-    setItemStrings([...itemStrings, value]);
-    setSelected(itemStrings.length);
-    return true;
-  };
-  const sortOptions: IndexFiltersProps["sortOptions"] = [
-    { label: "Order", value: "order asc", directionLabel: "Ascending" },
-    { label: "Order", value: "order desc", directionLabel: "Descending" },
-    { label: "Customer", value: "customer asc", directionLabel: "A-Z" },
-    { label: "Customer", value: "customer desc", directionLabel: "Z-A" },
-    { label: "Date", value: "date asc", directionLabel: "A-Z" },
-    { label: "Date", value: "date desc", directionLabel: "Z-A" },
-    { label: "Total", value: "total asc", directionLabel: "Ascending" },
-    { label: "Total", value: "total desc", directionLabel: "Descending" },
-  ];
-  const [sortSelected, setSortSelected] = useState(["order asc"]);
-  const { mode, setMode } = useSetIndexFiltersMode(IndexFiltersMode.Filtering);
-  const onHandleCancel = () => {};
+  const selectedTabTest = useMemo(() => {
+    return (
+      MAPPING_TAB_TYPE_TO_SELECTED_TAB[demoFilters?.tabType] ??
+      TapTypeEnum.campaign
+    );
+  }, [demoFilters?.tabType]);
 
-  const onHandleSave = async () => {
-    await sleep(1);
-    return true;
-  };
-
-  const primaryAction: IndexFiltersProps["primaryAction"] =
-    selected === 0
-      ? {
-          type: "save-as",
-          onAction: onCreateNewView,
-          disabled: false,
-          loading: false,
-        }
-      : {
-          type: "save",
-          onAction: onHandleSave,
-          disabled: false,
-          loading: false,
-        };
-
-  const [taggedWith, setTaggedWith] = useState<string | undefined>("");
-  const [queryValue, setQueryValue] = useState<string | undefined>(undefined);
-
-  const handleQueryValueChange = useCallback(
-    (value: string) => setQueryValue(value),
-    []
+  const handleChangeTab = useCallback(
+    (tabIndex: number) => {
+      const convertedValue = MAPPING_SELECTED_TAB_TO_TAB_TYPE[tabIndex];
+      handleChangeFilter({ tabType: convertedValue });
+    },
+    [handleChangeFilter]
   );
 
-  const handleTaggedWithRemove = useCallback(() => setTaggedWith(""), []);
-  const handleQueryValueRemove = useCallback(() => setQueryValue(""), []);
-  const handleFiltersClearAll = useCallback(() => {
-    handleTaggedWithRemove();
-    handleQueryValueRemove();
-  }, [handleQueryValueRemove, handleTaggedWithRemove]);
-
-  const appliedFilters =
-    taggedWith && !isEmpty(taggedWith)
-      ? [
-          {
-            key: "taggedWith",
-            label: disambiguateLabel("taggedWith", taggedWith),
-            onRemove: handleTaggedWithRemove,
-          },
-        ]
-      : [];
+  const { mode, setMode } = useSetIndexFiltersMode(IndexFiltersMode.Default);
 
   const { selectedResources, allResourcesSelected, handleSelectionChange } =
     useIndexResourceState(orders);
 
+  const handleChangeSorts = (value: string[]) => {
+    if (!isValidArray(value) || !value?.length || !value?.[0]) return;
+
+    const [item, direction] = value[0].split(" ");
+
+    item &&
+      direction &&
+      handleChangeFilter({
+        sortBy: {
+          item: item,
+          direction: direction,
+        },
+      });
+  };
+
+  const selectedSort = useMemo(() => {
+    const item = demoFilters?.sortBy?.item;
+    const direction = demoFilters?.sortBy?.direction;
+
+    return item && direction
+      ? [item + " " + direction]
+      : [ColumnTypeEnum.name + " " + SortDirectionEnum.descending];
+  }, [demoFilters]);
+
+  const [fullWidth, setFullWidth] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      // Your code to run after the timeout
+      setFullWidth(true);
+    }, 2000); // 2000 milliseconds = 2 seconds
+
+    // Cleanup function to clear the timeout
+    return () => {
+      clearTimeout(timer);
+    };
+  }, []);
+
+  useEffect(() => {
+    fetch("https://jsonplaceholder.typicode.com/todos")
+      .then(() => {
+        setIsLoading(false);
+      })
+      .catch(() => {
+        setIsLoading(false);
+      });
+  }, []);
+
   return (
-    <Card>
-      <IndexFilters
-        sortOptions={sortOptions}
-        sortSelected={sortSelected}
-        queryValue={queryValue}
-        queryPlaceholder="Searching in all"
-        onQueryChange={handleQueryValueChange}
-        onQueryClear={() => setQueryValue("")}
-        onSort={setSortSelected}
-        primaryAction={primaryAction}
-        cancelAction={{
-          onAction: onHandleCancel,
-          disabled: false,
-          loading: false,
-        }}
-        tabs={tabs}
-        selected={selected}
-        onSelect={setSelected}
-        canCreateNewView
-        onCreateNewView={onCreateNewView}
-        filters={filters}
-        appliedFilters={appliedFilters}
-        onClearAll={handleFiltersClearAll}
-        mode={mode}
-        setMode={setMode}
-      />
-      <IndexTable
-        condensed={useBreakpoints().smDown}
-        resourceName={resourceName}
-        itemCount={orders.length}
-        selectedItemsCount={
-          allResourcesSelected ? "All" : selectedResources.length
-        }
-        onSelectionChange={handleSelectionChange}
-        headings={HEADER}
-      >
-        <TableRows dataSource={orders} selectedResources={selectedResources} />
-      </IndexTable>
-    </Card>
+    <Page fullWidth={!isLoading}>
+      <Card>
+        <IndexFilters
+          loading={isLoading}
+          autoFocusSearchField
+          sortOptions={AD_REPORT_SORT_OPTIONS}
+          sortSelected={selectedSort}
+          queryValue={demoFilters?.search}
+          queryPlaceholder="Searching in all"
+          onQueryChange={(value) => handleChangeFilter({ search: value })}
+          onQueryClear={() => handleChangeFilter({ search: undefined })}
+          onSort={handleChangeSorts}
+          cancelAction={{
+            onAction: () => setMode(IndexFiltersMode.Default),
+            disabled: false,
+            loading: false,
+          }}
+          tabs={INITIAL_TABS_OPTIONS}
+          selected={selectedTabTest}
+          onSelect={handleChangeTab}
+          canCreateNewView={false}
+          filters={filters}
+          appliedFilters={appliedFilters}
+          onClearAll={handleFiltersClearAll}
+          mode={mode}
+          setMode={setMode}
+        />
+        <IndexTable
+          condensed={useBreakpoints().smDown}
+          resourceName={resourceName}
+          itemCount={orders.length}
+          selectedItemsCount={
+            allResourcesSelected ? "All" : selectedResources.length
+          }
+          onSelectionChange={handleSelectionChange}
+          headings={HEADER}
+        >
+          {isLoading ? (
+            <TableRowSkeleton />
+          ) : (
+            <Suspense fallback={<TableRowSkeleton />}>
+              <LazyTableRows
+                dataSource={orders}
+                selectedResources={selectedResources}
+              />
+            </Suspense>
+          )}
+        </IndexTable>
+        <AppPagination />
+      </Card>
+    </Page>
   );
 }
