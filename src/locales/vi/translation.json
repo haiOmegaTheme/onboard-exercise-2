@@ -1,0 +1,7 @@
+{
+  "title": "Chào mừng đến với Reactjs sử dụng react-i18next",
+  "description": {
+    "part1": "Để bắt đầu, Sửa <1>src/App.js</1> và lưu để tại lại trang.",
+    "part2": "Thay đổi giữa tiếng Anh và tiếng Việt bằng cách sử dụng button ở bên trên."
+  }
+}

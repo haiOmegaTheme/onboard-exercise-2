@@ -9,6 +9,8 @@ import { AppProvider } from "@shopify/polaris";
 import { BrowserRouter } from "react-router-dom";
 import React from "react";
 
+import "@/locales";
+
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <BrowserRouter>
