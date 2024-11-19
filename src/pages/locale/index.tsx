@@ -12,7 +12,7 @@ export default function LocalePage() {
       i18n.changeLanguage(langStr[0]);
       setSelected(langStr);
     },
-    [setSelected]
+    [i18n]
   );
   return (
     <div className="flex flex-col h-dvh bg-secondary">

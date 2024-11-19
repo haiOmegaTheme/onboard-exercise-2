@@ -1,12 +1,10 @@
 {
   "compilerOptions": {
-    "target": "ES2020",
+    "target": "ES2021", // Cập nhật từ ES2020 lên ES2021
     "useDefineForClassFields": true,
-    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "lib": ["ES2021", "DOM", "DOM.Iterable"], // Cập nhật từ ES2020 lên ES2021
     "module": "ESNext",
     "skipLibCheck": true,
-
-    /* Bundler mode */
     "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,
     "resolveJsonModule": true,
@@ -21,8 +19,6 @@
       "types/*": ["src/@types/*"],
       "public/*": ["public/*"]
     },
-
-    /* Linting */
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,

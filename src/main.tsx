@@ -1,22 +1,16 @@
+import "@/locales";
+import { AppProvider } from "@shopify/polaris";
+import "@shopify/polaris/build/esm/styles.css";
+import enTranslations from "@shopify/polaris/locales/en.json";
 import ReactDOM from "react-dom/client";
+import { BrowserRouter } from "react-router-dom";
 import App from "./App.tsx";
 import "./index.css";
-import "@shopify/polaris/build/esm/styles.css";
-
-import enTranslations from "@shopify/polaris/locales/en.json";
-import { AppProvider } from "@shopify/polaris";
-
-import { BrowserRouter } from "react-router-dom";
-import React from "react";
-
-import "@/locales";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
-  <React.StrictMode>
-    <BrowserRouter>
-      <AppProvider i18n={enTranslations}>
-        <App />
-      </AppProvider>
-    </BrowserRouter>
-  </React.StrictMode>
+  <BrowserRouter>
+    <AppProvider i18n={enTranslations}>
+      <App />
+    </AppProvider>
+  </BrowserRouter>
 );
