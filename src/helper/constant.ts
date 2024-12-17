@@ -1,5 +1,6 @@
 import { SelectOption } from "@shopify/polaris";
 import { CalendarLayoutEnum, LayoutEnum, WeekdaysEnum } from "./enum";
+import { TreeNode } from "@/types";
 
 export const WEEKDAYS_OPTIONS: SelectOption[] = [
   {
@@ -115,4 +116,138 @@ export const EMOJI_RATING_ARRAY = [
   USER_SATISFACTION_ICONS.average,
   USER_SATISFACTION_ICONS.good,
   USER_SATISFACTION_ICONS.excellent,
+];
+
+export const mockData: TreeNode[] = [
+  {
+    id: "1",
+    label: "Electronics",
+    children: [
+      {
+        id: "1-1",
+        label: "Smartphones",
+        children: [
+          { id: "1-1-1", label: "iPhone" },
+          { id: "1-1-2", label: "Samsung" },
+          { id: "1-1-3", label: "Google Pixel" },
+        ],
+      },
+      {
+        id: "1-2",
+        label: "Laptops",
+        children: [
+          { id: "1-2-1", label: "MacBook" },
+          { id: "1-2-2", label: "Dell XPS" },
+          { id: "1-2-3", label: "Lenovo ThinkPad" },
+        ],
+      },
+      {
+        id: "1-3",
+        label: "Accessories",
+        children: [
+          { id: "1-3-1", label: "Headphones" },
+          { id: "1-3-2", label: "Chargers" },
+          { id: "1-3-3", label: "Cases" },
+        ],
+      },
+    ],
+  },
+  {
+    id: "2",
+    label: "Clothing",
+    children: [
+      {
+        id: "2-1",
+        label: "Men",
+        children: [
+          { id: "2-1-1", label: "Shirts" },
+          { id: "2-1-2", label: "Pants" },
+          { id: "2-1-3", label: "Shoes" },
+        ],
+      },
+      {
+        id: "2-2",
+        label: "Women",
+        children: [
+          { id: "2-2-1", label: "Dresses" },
+          { id: "2-2-2", label: "Skirts" },
+          { id: "2-2-3", label: "Accessories" },
+        ],
+      },
+      {
+        id: "2-3",
+        label: "Children",
+        children: [
+          { id: "2-3-1", label: "Boys" },
+          { id: "2-3-2", label: "Girls" },
+        ],
+      },
+    ],
+  },
+  {
+    id: "3",
+    label: "Home & Garden",
+    children: [
+      {
+        id: "3-1",
+        label: "Furniture",
+        children: [
+          { id: "3-1-1", label: "Living Room" },
+          { id: "3-1-2", label: "Bedroom" },
+          { id: "3-1-3", label: "Dining Room" },
+        ],
+      },
+      {
+        id: "3-2",
+        label: "Appliances",
+        children: [
+          { id: "3-2-1", label: "Refrigerators" },
+          { id: "3-2-2", label: "Washing Machines" },
+          { id: "3-2-3", label: "Dishwashers" },
+        ],
+      },
+      {
+        id: "3-3",
+        label: "Garden",
+        children: [
+          { id: "3-3-1", label: "Plants" },
+          { id: "3-3-2", label: "Tools" },
+          { id: "3-3-3", label: "Outdoor Furniture" },
+        ],
+      },
+    ],
+  },
+  {
+    id: "4",
+    label: "Sports & Outdoors",
+    children: [
+      {
+        id: "4-1",
+        label: "Team Sports",
+        children: [
+          { id: "4-1-1", label: "Football" },
+          { id: "4-1-2", label: "Basketball" },
+          { id: "4-1-3", label: "Soccer" },
+        ],
+      },
+      {
+        id: "4-2",
+        label: "Outdoor Recreation",
+        children: [
+          { id: "4-2-1", label: "Camping" },
+          { id: "4-2-2", label: "Hiking" },
+          { id: "4-2-3", label: "Fishing" },
+        ],
+      },
+      {
+        id: "4-3",
+        label: "Exercise & Fitness",
+        children: [
+          { id: "4-3-1", label: "Yoga" },
+          { id: "4-3-2", label: "Weightlifting" },
+          { id: "4-3-3", label: "Cardio Equipment" },
+        ],
+      },
+    ],
+  },
 ];

@@ -117,3 +117,38 @@ export type TableItem = {
   purchases: number | null; // could be null or a number
   totalSales: number;
 };
+
+export type Node = {
+  name: string;
+  checked: boolean;
+  nodes?: Node[];
+};
+
+export type RegionInfo = {
+  name: string;
+  region_code: string;
+  next_level_ids: string[];
+  parent_id: string;
+  level: string;
+  support_below_18: boolean;
+  area_type: string;
+  location_id: string;
+};
+
+export type LocationType = {
+  region_info: RegionInfo[];
+  region_list: string[];
+};
+
+export type Response<T> = {
+  code: number;
+  data: T;
+  message: "OK";
+  request_id: string;
+};
+
+export type TreeNode = {
+  id: string;
+  label: string;
+  children?: TreeNode[];
+};
