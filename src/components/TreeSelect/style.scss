@@ -1,0 +1,21 @@
+.tree-select {
+  position: relative;
+
+  &__dropdown {
+    position: absolute;
+    top: 38px;
+    left: 0;
+    right: 0;
+    z-index: 20;
+    opacity: 0;
+
+    transform: translateY(-10%);
+    transition: opacity 0.25s ease-in-out, transform 0.25s ease-in-out;
+    pointer-events: none;
+    &--visible {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: all;
+    }
+  }
+}

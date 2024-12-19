@@ -1,155 +1,72 @@
-import { BlockStack } from "@shopify/polaris";
-import { Folder } from "./components/Folder";
-import { Node } from "@/types";
-import { TreeNodeProps, TreeSelect } from "antd";
-import { DataNode } from "antd/es/tree";
-import { useState } from "react";
-import { useGetLocations } from "@/services";
-import { TreeSelect as DemoTree } from "@/components/DemoTree";
-import { mockData } from "@/helper/constant";
-
-const data: Node[] = [
-  {
-    name: "Home",
-    checked: false,
-  },
-  {
-    name: "Demo",
-    checked: false,
-    nodes: [
-      {
-        name: "1",
-        checked: true,
-      },
-      {
-        name: "2",
-        checked: true,
-        nodes: [
-          {
-            name: "demo 1",
-            checked: false,
-          },
-        ],
-      },
-    ],
-  },
-];
-
-const { SHOW_PARENT } = TreeSelect;
-
-const treeData = [
-  {
-    title: "Node1",
-    value: "0-0",
-    key: "0-0",
-    children: [
-      {
-        title: "Child Node1",
-        value: "0-0-0",
-        key: "0-0-0",
-      },
-    ],
-  },
-  {
-    title: "Node2",
-    value: "0-1",
-    key: "0-1",
-    children: [
-      {
-        title: "Child Node3",
-        value: "0-1-0",
-        key: "0-1-0",
-      },
-      {
-        title: "Child Node4",
-        value: "0-1-1",
-        key: "0-1-1",
-      },
-      {
-        title: "Child Node5",
-        value: "0-1-2",
-        key: "0-1-2",
-      },
-    ],
-  },
-];
+import { TreeSelect } from "@/components/TreeSelect";
+import { useGetLocations, useSearchLocations } from "@/services";
+import { Node } from "@/types/treeSelect";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 export default function DemoPage() {
-  const options: DataNode[] = [
+  const [search, setSearch] = useState("");
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const { data } = useGetLocations();
+  useSearchLocations(
+    { search: search.trim() },
     {
-      key: "1",
-      title: "demo 1",
-      children: [
-        {
-          key: "11",
-          title: "11",
-        },
-      ],
-    },
-    {
-      key: "2",
-      title: "demo 2",
-      children: [
-        {
-          key: "11",
-          title: "11",
-        },
-      ],
-    },
-    {
-      key: "3",
-      title: "demo 3",
-      children: [
-        {
-          key: "11",
-          title: "11",
-        },
-      ],
-    },
-  ];
+      enabled: !!search.trim(),
+    }
+  );
 
-  const [value, setValue] = useState(["0-0-0"]);
+  const sortNodes = useCallback((nodes: Node[]) => {
+    nodes.forEach((node) => {
+      if (node.nodes && node.nodes.length > 0) {
+        sortNodes(node.nodes);
+      }
+    });
+    nodes.sort((a, b) => a.label.localeCompare(b.label));
+  }, []);
 
-  const onChange = (newValue: string[]) => {
-    console.log("onChange ", newValue);
-    setValue(newValue);
-  };
+  const nodes: Node[] = useMemo(() => {
+    const regionInfo = data?.region_info;
+    if (!regionInfo?.length) return [];
 
-  const tProps = {
-    treeData,
-    value,
-    onChange,
-    treeCheckable: true,
-    showCheckedStrategy: SHOW_PARENT,
-    placeholder: "Please select",
-    style: {
-      width: "100%",
-    },
-  };
+    // Create a map of all nodes
+    const nodeMap: { [key: string]: Node } = {};
+    regionInfo.forEach((item) => {
+      nodeMap[item.location_id] = {
+        id: item.location_id,
+        label: item.name,
+        nodes: [],
+      };
+    });
 
-  const { data: demo } = useGetLocations();
+    // Link child nodes to their parent nodes
+    regionInfo.forEach((item) => {
+      if (item.next_level_ids.length > 0) {
+        item.next_level_ids.forEach((childId) => {
+          if (nodeMap[childId]) {
+            nodeMap[item.location_id].nodes!.push(nodeMap[childId]);
+          }
+        });
+      }
+    });
+
+    // Get the root nodes and sort them
+    const rootNodes = regionInfo
+      .filter((item) => item.parent_id === "0")
+      .map((item) => nodeMap[item.location_id]);
+
+    sortNodes(rootNodes);
+
+    return rootNodes;
+  }, [data?.region_info, sortNodes]);
+
   return (
     <div className="container">
-      <BlockStack>
-        {data.map((item) => (
-          <Folder folder={item} key={item.name} />
-        ))}
-      </BlockStack>
-      <div className="w-20">
-        <TreeSelect
-          showCheckedStrategy="SHOW_PARENT"
-          className="w-[200px]"
-          treeCheckable
-          treeData={options}
-          value={["1"]}
-          onChange={(value) => console.log(1111, value)}
-        />
-      </div>
-
-      <DemoTree
-        data={mockData}
-        onChange={(data) => {
-          console.log(1111, data);
+      <div className="mt-[50px]"></div>
+      <TreeSelect
+        nodes={nodes}
+        search={search}
+        onSearch={(value) => {
+          console.log(1111, value);
+          setSearch(value);
         }}
       />
     </div>

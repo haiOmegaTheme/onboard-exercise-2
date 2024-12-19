@@ -1,17 +1,17 @@
-import { Node } from "@/types";
+import { Node } from "@/types/treeSelect";
 import { Box, Checkbox, Icon, InlineStack } from "@shopify/polaris";
 import { ChevronDownIcon, ChevronRightIcon } from "@shopify/polaris-icons";
 import { useState } from "react";
 
 type Props = {
-  folder: Node;
+  node: Node;
 };
 
-export const Folder = ({ folder }: Props) => {
+export const Folder = ({ node }: Props) => {
   const [open, setOpen] = useState(false);
   return (
     <>
-      <InlineStack>
+      <InlineStack align="start" blockAlign="center">
         <div
           onClick={() => setOpen((prev) => !prev)}
           role="none"
@@ -19,23 +19,24 @@ export const Folder = ({ folder }: Props) => {
             cursor: "pointer",
           }}
         >
-          <Box>
-            <Icon
-              source={open ? ChevronDownIcon : ChevronRightIcon}
-              tone="base"
-            />
+          <Box width="20px">
+            {node?.nodes?.length ? (
+              <Icon
+                source={open ? ChevronDownIcon : ChevronRightIcon}
+                tone="base"
+              />
+            ) : null}
           </Box>
         </div>
-        <Checkbox label={folder.name} checked={folder.checked} />
+        <Checkbox label={node.label + " --- " + node.id} checked />
       </InlineStack>
-      {open && (
+      {open ? (
         <Box paddingInlineStart="400">
-          {folder.nodes?.length &&
-            folder.nodes.map((item) => (
-              <Folder folder={item} key={folder.name} />
-            ))}
+          {node.nodes?.length
+            ? node.nodes.map((item) => <Folder node={item} key={item.id} />)
+            : null}
         </Box>
-      )}{" "}
+      ) : null}
     </>
   );
 };
