@@ -1,4 +1,6 @@
-import { isValidArray } from "./validator";
+import { UNICODE_NORMALIZATION_FORM_NFKD } from './constant';
+import { RegexConstant } from './regex';
+import { isValidArray } from './validator';
 
 /**
  * Paginates a list of items based on the provided page and limit.
@@ -19,10 +21,7 @@ import { isValidArray } from "./validator";
  * const paginatedItems = getPaginatedItems([], { page: 1, limit: 2 });
  * console.log(paginatedItems); // []
  */
-export const getPaginatedItems = (
-  items: any,
-  { page, limit }: { page: any; limit: any }
-) => {
+export const getPaginatedItems = (items: any, { page, limit }: { page: number; limit: number }) => {
   if (!isValidArray(items)) {
     return [];
   }
@@ -38,3 +37,6 @@ export const getPaginatedItems = (
 
   return paginatedItems;
 };
+
+export const normalizeString = (str = '') =>
+  str.normalize(UNICODE_NORMALIZATION_FORM_NFKD).replace(RegexConstant.DIACRITICAL_MARKS_REGEX, '').toLowerCase();

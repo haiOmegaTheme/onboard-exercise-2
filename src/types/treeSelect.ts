@@ -2,6 +2,13 @@ export type Node = {
   id: string;
   label: string;
   nodes?: Node[];
+  alternativeName?: string;
+};
+
+export type BaseOptions = {
+  value: string;
+  label: string;
+  name: string;
 };
 
 interface StatusInfo {
