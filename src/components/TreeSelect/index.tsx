@@ -5,6 +5,7 @@ import { BlockStack, Card, Icon, OptionList, Scrollable, TextField } from '@shop
 import { SearchIcon } from '@shopify/polaris-icons';
 import { useCallback, useMemo, useRef, useState } from 'react';
 import './style.scss';
+import { isValidArray } from '@/helper/validator';
 
 type Props = {
   search: string;
@@ -14,6 +15,8 @@ type Props = {
   selectedIds?: string[];
   flattedNodes?: BaseOptions[];
   onScrolledToBottom?: () => void;
+  loading?: boolean;
+  onSelectSearchItem?: (checked: boolean, nodeId: string) => void;
 };
 
 export const TreeSelect = ({
@@ -23,7 +26,9 @@ export const TreeSelect = ({
   onSelectLocation,
   selectedIds,
   onScrolledToBottom,
-  flattedNodes
+  flattedNodes,
+  loading,
+  onSelectSearchItem
 }: Props) => {
   const [active, setActive] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -43,6 +48,7 @@ export const TreeSelect = ({
   return (
     <div className="tree-select" ref={inputRef}>
       <TextField
+        loading={loading}
         autoComplete="off"
         label=""
         placeholder="Search or choose location"
@@ -53,10 +59,10 @@ export const TreeSelect = ({
         onClearButtonClick={() => onSearch('')}
         onFocus={() => setActive(() => true)}
       />
-      <div className={`tree-select__dropdown${active ? ' tree-select__dropdown--visible' : ''}`}>
+      <div className={`tree-select__dropdown${active && !loading ? ' tree-select__dropdown--visible' : ''}`}>
         <Card padding="200">
           <Scrollable
-            onScrolledToBottom={onScrolledToBottom}
+            onScrolledToBottom={() => !isShowNode && onScrolledToBottom?.()}
             style={{
               height: 266
             }}>
@@ -73,10 +79,11 @@ export const TreeSelect = ({
             {!isShowNode && flattedNodes?.length ? (
               <BlockStack>
                 <OptionList
-                  selected={selectedIds ?? []}
+                  selected={[]}
                   options={flattedNodes}
                   onChange={(value) => {
-                    onSelectLocation?.(true, { id: value[0], label: '' }, true);
+                    if (!isValidArray(value)) return;
+                    onSelectSearchItem?.(true, value[0]);
                   }}
                 />
               </BlockStack>

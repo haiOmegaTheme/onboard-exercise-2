@@ -1,4 +1,6 @@
-export type Node = {
+import { RegionInfo } from '.';
+
+export type Node = RegionInfo & {
   id: string;
   label: string;
   nodes?: Node[];
