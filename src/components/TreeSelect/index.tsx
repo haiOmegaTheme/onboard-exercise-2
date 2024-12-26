@@ -69,7 +69,13 @@ export const TreeSelect = ({
             {isShowNode &&
               (nodes?.length ? (
                 nodes.map((item) => (
-                  <Folder node={item} key={item.id} selectedIds={selectedIds} onSelectLocation={handleSelect} />
+                  <Folder
+                    node={item}
+                    key={item.id}
+                    selectedIds={selectedIds}
+                    onSelectLocation={handleSelect}
+                    demo={false}
+                  />
                 ))
               ) : (
                 <div className="flex h-full w-full items-center justify-center">

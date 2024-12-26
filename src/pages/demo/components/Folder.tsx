@@ -1,31 +1,36 @@
 import { Node } from '@/types/treeSelect';
 import { Box, Checkbox, Icon, InlineStack } from '@shopify/polaris';
 import { ChevronDownIcon, ChevronRightIcon } from '@shopify/polaris-icons';
-import { useCallback, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 
 type Props = {
   node: Node;
   selectedIds?: string[];
   onSelectLocation?: (checked: boolean, node: Node) => void;
+  demo: boolean | 'indeterminate';
 };
 
-export const Folder = ({ node, selectedIds, onSelectLocation }: Props) => {
+export const Folder = ({ node, selectedIds, onSelectLocation, demo }: Props) => {
   const [open, setOpen] = useState(false);
 
   const generateCheckedValue = useCallback(
     (node: Node): boolean | 'indeterminate' => {
       // Check if the node has no children
 
-      if (!node.nodes || node.nodes.length === 0) {
-        // Return true if nodeId exists in selectedIds, otherwise return false
-        return (selectedIds ?? []).includes(node.id);
+      if ((selectedIds ?? []).includes(node.id)) {
+        return true;
       }
+
+      // if (!node.nodes || node.nodes.length === 0) {
+      //   // Return true if nodeId exists in selectedIds, otherwise return false
+      //   return (selectedIds ?? []).includes(node.id);
+      // }
 
       // If the node has children, recursively evaluate their state
       let allSelected = true;
       let anySelected = false;
 
-      for (const child of node.nodes) {
+      for (const child of node?.nodes ?? []) {
         const childValue = generateCheckedValue(child);
         if (childValue === true) {
           anySelected = true;
@@ -42,11 +47,21 @@ export const Folder = ({ node, selectedIds, onSelectLocation }: Props) => {
         return 'indeterminate';
       }
 
+      if (allSelected && anySelected) {
+        return true;
+      }
       // Return true if all children are selected, otherwise return false
-      return allSelected;
+      return false;
     },
     [selectedIds]
   );
+
+  const demoValue = useMemo(() => {
+    if (demo === true) {
+      return demo;
+    }
+    return generateCheckedValue(node);
+  }, [demo, generateCheckedValue, node]);
 
   return (
     <>
@@ -63,7 +78,7 @@ export const Folder = ({ node, selectedIds, onSelectLocation }: Props) => {
         </div>
         <Checkbox
           label={node.label + ' --- ' + node.id}
-          checked={generateCheckedValue(node)}
+          checked={demoValue}
           onChange={(checked) => onSelectLocation?.(checked, node)}
         />
       </InlineStack>
@@ -71,7 +86,13 @@ export const Folder = ({ node, selectedIds, onSelectLocation }: Props) => {
         <Box paddingInlineStart="400">
           {node.nodes?.length
             ? node.nodes.map((item) => (
-                <Folder node={item} key={item.id} onSelectLocation={onSelectLocation} selectedIds={selectedIds} />
+                <Folder
+                  node={item}
+                  key={item.id}
+                  onSelectLocation={onSelectLocation}
+                  selectedIds={selectedIds}
+                  demo={demoValue}
+                />
               ))
             : null}
         </Box>

@@ -34,8 +34,37 @@ function findNodeById(nodes: Node[], selectedNodeId: string): Node | undefined {
 }
 
 type RenderItem = {
-  label: string;
+  label: string; // selected regions country name
   tags: { id: string; label: string }[];
+};
+
+const gerate = (regionInfo: RegionInfo[], selectedIds: string[]): RenderItem[] => {
+  const groupByParent = selectedIds.reduce<Record<string, RegionInfo[]>>((acc, selectedId) => {
+    const selectedRegion = regionInfo.find((region) => region.location_id === selectedId);
+
+    if (selectedRegion) {
+      // Traverse up to the parent region if it's not a COUNTRY
+      let currentRegion = selectedRegion;
+      while (currentRegion.level !== 'COUNTRY') {
+        const parentRegion = regionInfo.find((region) => region.location_id === currentRegion.parent_id);
+        if (parentRegion) {
+          currentRegion = parentRegion;
+        } else {
+          break; // Stop if no valid parent is found
+        }
+      }
+
+      // Use the country's location_id as the grouping key
+      const parentId = currentRegion.location_id;
+      if (!acc[parentId]) {
+        acc[parentId] = [];
+      }
+      acc[parentId].push(selectedRegion);
+    }
+    return acc;
+  }, {});
+
+  return [];
 };
 
 function renderRegions(regionInfo: RegionInfo[], selectedIds: string[]): RenderItem[] {
@@ -63,6 +92,8 @@ function renderRegions(regionInfo: RegionInfo[], selectedIds: string[]): RenderI
     }
     return acc;
   }, {});
+
+  console.log(1111, groupByParent);
 
   const result: RenderItem[] = [];
 
@@ -183,6 +214,94 @@ function renderRegions(regionInfo: RegionInfo[], selectedIds: string[]): RenderI
 //   return result;
 // }
 
+function generateRenderItems(regions: RegionInfo[], selectedRegionIds: string[]): RenderItem[] {
+  const regionMap = new Map<string, RegionInfo>();
+  const childrenMap = new Map<string, RegionInfo[]>();
+
+  // Xây dựng bản đồ vùng và bản đồ con
+  regions.forEach((region) => {
+    regionMap.set(region.location_id, region);
+    if (region.parent_id !== '0') {
+      if (!childrenMap.has(region.parent_id)) {
+        childrenMap.set(region.parent_id, []);
+      }
+      childrenMap.get(region.parent_id)!.push(region);
+    }
+  });
+
+  const renderItems: RenderItem[] = [];
+  const selectedSet = new Set(selectedRegionIds);
+
+  // Hàm kiểm tra nếu tất cả con được chọn
+  const areAllChildrenSelected = (nextLevelIds: string[], selectedIds: Set<string>) => {
+    return nextLevelIds.every((id) => selectedIds.has(id));
+  };
+
+  // Duyệt qua từng `COUNTRY` (cấp cao nhất với `parent_id` = "0")
+  regions
+    .filter((region) => region.parent_id === '0') // Chỉ xử lý `COUNTRY`
+    .forEach((country) => {
+      const countrySelected = selectedSet.has(country.location_id);
+
+      if (countrySelected || areAllChildrenSelected(country.next_level_ids, selectedSet)) {
+        // Nếu đã chọn toàn bộ hoặc country được chọn, chỉ hiển thị `COUNTRY`
+        renderItems.push({
+          label: country.name,
+          tags: [{ id: country.location_id, label: country.name }]
+        });
+
+        // Xóa các con (next_level_ids) khỏi selectedSet để tránh xử lý lặp lại
+        country.next_level_ids.forEach((id) => selectedSet.delete(id));
+      } else {
+        // Nếu chưa chọn toàn bộ, hiển thị các `tags` cho phần tử con đã chọn
+        const tags = (childrenMap.get(country.location_id) || [])
+          .filter((child) => selectedSet.has(child.location_id))
+          .map((child) => ({ id: child.location_id, label: child.name }));
+
+        if (tags.length > 0) {
+          renderItems.push({
+            label: country.name,
+            tags
+          });
+        }
+      }
+    });
+
+  return renderItems;
+}
+
+function generateRegionTree(regions: Node[], selectedRegionIds: string[]): Node[] {
+  const selectedSet = new Set(selectedRegionIds); // Tập hợp các id đã chọn
+
+  // Đệ quy tạo cây từ danh sách các region
+  const buildTree = (parentId: string): Node[] => {
+    const children = regions.filter((region) => region.parent_id === parentId);
+
+    return children
+      .map((child) => {
+        const childNodes = buildTree(child.location_id);
+        const allChildrenSelected =
+          child.next_level_ids.length > 0 && child.next_level_ids.every((id) => selectedSet.has(id));
+        const childSelected = selectedSet.has(child.location_id);
+
+        // Nếu child hoặc tất cả các con được chọn
+        if (childSelected || allChildrenSelected || childNodes.length > 0) {
+          return {
+            id: child.location_id,
+            label: child.name,
+            nodes: childNodes.length > 0 ? childNodes : undefined
+          };
+        }
+
+        return null;
+      })
+      .filter(Boolean) as Node[]; // Lọc bỏ các node không hợp lệ
+  };
+
+  // Xây dựng cây bắt đầu từ các COUNTRY (parent_id = '0')
+  return buildTree('0');
+}
+
 export default function DemoPage() {
   const [search, setSearch] = useState('');
   const [selectedIds, setSelectedIds] = useState<SelectedIds>({});
@@ -209,6 +328,8 @@ export default function DemoPage() {
           id: region.location_id,
           label: region.name,
           alternativeName: currentNames.join(', '),
+          parentId: region.parent_id,
+          nextLevelIds: region?.next_level_ids ?? [],
           nodes: []
         };
       }
@@ -225,6 +346,8 @@ export default function DemoPage() {
         id: region.location_id,
         label: region.name,
         alternativeName: currentNames.join(', '),
+        parentId: region.parent_id,
+        nextLevelIds: region?.next_level_ids ?? [],
         nodes: filteredNode
       };
     },
@@ -241,23 +364,103 @@ export default function DemoPage() {
     return nodes;
   }, [data?.region_info, mapRegionToNode, sortNodes]);
 
+  // const handleSelect = useCallback(
+  //   (checked: boolean, node: Node) => {
+  //     const newSelected = { ...selectedIds };
+
+  //     const parentId = node.parentId;
+  //     const parentNextLevelIds = node.nextLevelIds ?? [];
+
+  //     if (!checked) {
+  //       newSelected[node.id] = false;
+  //       console.log(3);
+  //       setSelectedIds(newSelected);
+  //       return;
+  //     }
+
+  //     const filteredParentNextLevelIds = parentNextLevelIds.filter((id) => id !== node.id) ?? [];
+
+  //     const allChildrenSelected = filteredParentNextLevelIds.every((id) => newSelected[id]);
+
+  //     if (allChildrenSelected && parentId !== '0') {
+  //       console.log(1);
+  //       newSelected[parentId] = true;
+  //     } else {
+  //       console.log(2);
+  //       newSelected[node.id] = true;
+  //     }
+
+  //     setSelectedIds(newSelected);
+  //   },
+  //   [selectedIds]
+  // );
+
   const handleSelect = useCallback(
-    (checked: boolean, node: Node, isClearAll?: boolean) => {
-      if (isClearAll && node?.id) {
-        setSelectedIds({
-          [node.id]: checked
-        });
-        return;
-      }
-      const newSelected = { ...selectedIds };
-      const selectRecursive = (n: Node) => {
-        newSelected[n.id] = checked;
-        n.nodes?.forEach((child) => selectRecursive(child));
-      };
-      selectRecursive(node);
-      setSelectedIds(newSelected);
+    (checked: boolean, node: Node) => {
+      setSelectedIds((prevSelectedIds) => {
+        const newSelected: SelectedIds = { ...prevSelectedIds };
+
+        // Helper function: Lấy tất cả node con của một node (bao gồm child, grandchild, etc.)
+        const getAllDescendants = (nodeId: string): string[] => {
+          const children = findNodeById(nodes, nodeId)?.nextLevelIds ?? [];
+          return children.reduce<string[]>((acc, childId) => [...acc, childId, ...getAllDescendants(childId)], []);
+        };
+
+        // Helper function: Kiểm tra tất cả các siblings của node
+        const areAllSiblingsSelected = (nodeId: string, parentNodeId: string): boolean => {
+          const siblings = findNodeById(nodes, parentNodeId)?.nextLevelIds ?? [];
+          return siblings.filter((id) => id !== nodeId).every((siblingId) => newSelected[siblingId]);
+        };
+
+        // Recursive function to handle parent selection
+        const selectParentRecursively = (parentId: string) => {
+          const parentNode = findNodeById(nodes, parentId);
+          if (!parentNode) return;
+
+          newSelected[parentId] = true;
+
+          // Kiểm tra node cha của node hiện tại (đệ quy)
+          if (parentNode.parentId !== '0') {
+            const allSiblingsSelected = areAllSiblingsSelected(parentId, parentNode.parentId);
+            if (allSiblingsSelected) {
+              selectParentRecursively(parentNode.parentId);
+            }
+          }
+        };
+
+        // Node root: parentId === '0'
+        if (node.parentId === '0') {
+          // Set trạng thái của node root
+          newSelected[node.id] = checked;
+
+          // Nếu checked = false: bỏ chọn toàn bộ các node con
+          if (!checked) {
+            const descendants = getAllDescendants(node.id);
+            descendants.forEach((descendantId) => {
+              newSelected[descendantId] = false;
+            });
+          }
+
+          return newSelected; // Bắt buộc trả về giá trị
+        }
+
+        // Xử lý cho các node không phải root
+        newSelected[node.id] = checked;
+
+        if (checked) {
+          // Kiểm tra tất cả các siblings
+          const allSiblingsSelected = areAllSiblingsSelected(node.id, node.parentId);
+
+          if (allSiblingsSelected) {
+            // Nếu tất cả siblings được chọn, chọn node cha
+            selectParentRecursively(node.parentId);
+          }
+        }
+
+        return newSelected; // Bắt buộc trả về giá trị
+      });
     },
-    [selectedIds]
+    [nodes]
   );
 
   const handleSelectSearchItem = useCallback(
@@ -285,7 +488,7 @@ export default function DemoPage() {
   useEffect(() => {
     if (!selectedIds) return;
     const selectedIdsArray = Object.keys(selectedIds).filter((id) => selectedIds[id]);
-    console.log('selectedIdsArray', renderRegions(data?.region_info ?? [], selectedIdsArray));
+    console.log('selectedIdsArray', gerate(data?.region_info ?? [], selectedIdsArray));
   }, [data?.region_info, selectedIds]);
 
   const buildAlternativeNames = useCallback((locations: RegionInfo[]): BaseOptions[] => {

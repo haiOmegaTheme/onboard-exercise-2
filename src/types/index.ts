@@ -1,4 +1,4 @@
-import { ReactNode, LazyExoticComponent } from "react";
+import { ReactNode, LazyExoticComponent } from 'react';
 
 export type LayoutProps = {
   children: ReactNode;
@@ -27,11 +27,11 @@ export type DataItem = {
 };
 
 enum FeatureEnum {
-  pixel = "PIXEL",
-  analytics = "ANALYTICS",
-  catalog = "CATALOG",
-  pricing = "PRICING",
-  home = "HOME",
+  pixel = 'PIXEL',
+  analytics = 'ANALYTICS',
+  catalog = 'CATALOG',
+  pricing = 'PRICING',
+  home = 'HOME'
 }
 
 export type Data = {
@@ -61,8 +61,8 @@ export type OrderItem = {
 // =============================================
 
 export enum SortDirectionEnum {
-  ascending = "asc",
-  descending = "desc",
+  ascending = 'asc',
+  descending = 'desc'
 }
 
 type SortBy = {
@@ -83,28 +83,28 @@ export type Filters = {
 };
 
 export enum ColumnTypeEnum {
-  name = "NAME",
-  viewContent = "VIEW_CONTENT",
-  addToCart = "ADD_TO_CART",
-  initiateCheckout = "INITIATE_CHECKOUT",
-  purchases = "PURCHASES",
-  totalSales = "TOTAL_SALES",
+  name = 'NAME',
+  viewContent = 'VIEW_CONTENT',
+  addToCart = 'ADD_TO_CART',
+  initiateCheckout = 'INITIATE_CHECKOUT',
+  purchases = 'PURCHASES',
+  totalSales = 'TOTAL_SALES'
 }
 
 export enum SourceTypeEnum {
-  tikTok = "TIK_TOK",
+  tikTok = 'TIK_TOK'
 }
 
 export enum TapTypeEnum {
-  campaign = "CAMPAIGN",
-  adGroup = "AD_GROUP",
-  ad = "AD",
+  campaign = 'CAMPAIGN',
+  adGroup = 'AD_GROUP',
+  ad = 'AD'
 }
 
 export enum AdReportTableTabEnum {
   first = 0,
   second = 1,
-  third = 2,
+  third = 2
 }
 
 export type TableItem = {
@@ -128,8 +128,8 @@ export type RegionInfo = {
   name: string;
   region_code: string;
   next_level_ids: string[];
-  parent_id: string;
-  level: string;
+  parent_id: string; // parent_id of the first level is '0'
+  level: 'COUNTRY' | 'PROVINCE' | 'CITY';
   support_below_18: boolean;
   area_type: string;
   location_id: string;
@@ -143,7 +143,7 @@ export type LocationType = {
 export type Response<T> = {
   code: number;
   data: T;
-  message: "OK";
+  message: 'OK';
   request_id: string;
 };
 

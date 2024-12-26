@@ -3,6 +3,8 @@ import { RegionInfo } from '.';
 export type Node = RegionInfo & {
   id: string;
   label: string;
+  parentId: string;
+  nextLevelIds: string[];
   nodes?: Node[];
   alternativeName?: string;
 };
